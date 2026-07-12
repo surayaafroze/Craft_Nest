@@ -9,6 +9,10 @@ export interface Item {
   ownerId: string;
   status: string;
   tags?: string[];
+  quantity?: number;
+  location?: string;
+  avgRating?: number;
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
 }
