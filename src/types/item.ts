@@ -2,10 +2,10 @@ export interface Item {
   id: string;
   title: string;
   shortDescription: string;
-  description?: string;
+  fullDescription: string;
   category: string;
   price: number;
-  imageUrls: string[];
+  images: string[];
   ownerId: string;
   status: string;
   tags?: string[];

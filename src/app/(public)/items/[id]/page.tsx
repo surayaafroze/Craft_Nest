@@ -168,7 +168,7 @@ export default function ItemDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Gallery */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <ImageGallery images={item.imageUrls || []} />
+            <ImageGallery images={item.images || []} />
           </motion.div>
 
           {/* Details */}
@@ -206,7 +206,7 @@ export default function ItemDetailsPage() {
             </div>
 
             <div className="prose dark:prose-invert max-w-none mb-8 text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-              {item.description || item.shortDescription}
+              {item.fullDescription || item.shortDescription}
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-8">

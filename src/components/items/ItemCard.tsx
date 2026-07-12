@@ -11,7 +11,7 @@ interface ItemCardProps {
 }
 
 export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
-  const imageUrl = item.imageUrls?.[0] || "/placeholder.jpg";
+  const imageUrl = item.images?.[0] || "/placeholder.jpg";
 
   return (
     <motion.div
