@@ -18,6 +18,22 @@ interface FeaturedItem {
   image: string;
 }
 
+interface Contributor {
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  sales: number;
+}
+
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  createdAt: string;
+}
+
 // Reusable Animated Counter Component
 function AnimatedCounter({ value, duration = 2000 }: { value: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -54,6 +70,74 @@ export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [contributors, setContributors] = useState<Contributor[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [email, setEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+
+  useEffect(() => {
+    const fetchAdditionalData = async () => {
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+      try {
+        const [contributorsRes, blogRes] = await Promise.all([
+          fetch(`${serverUrl}/api/home/top-contributors`),
+          fetch(`${serverUrl}/api/home/blog-preview`)
+        ]);
+        
+        if (contributorsRes.ok) {
+          const cData = await contributorsRes.json();
+          if (cData.success) setContributors(cData.data);
+        }
+        
+        if (blogRes.ok) {
+          const bData = await blogRes.json();
+          if (bData.success) setBlogPosts(bData.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch additional homepage data:", err);
+      }
+    };
+    
+    fetchAdditionalData();
+  }, []);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) {
+      showToast("Please enter a valid email address", "error");
+      return;
+    }
+    
+    setNewsletterStatus("loading");
+    setNewsletterMessage("");
+    
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+    try {
+      const res = await fetch(`${serverUrl}/api/home/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        setNewsletterStatus("success");
+        setNewsletterMessage(data.message || "Subscribed successfully!");
+        setEmail("");
+        showToast("Subscribed to newsletter!", "success");
+      } else {
+        setNewsletterStatus("error");
+        setNewsletterMessage(data.message || "Failed to subscribe.");
+        showToast(data.message || "Failed to subscribe", "error");
+      }
+    } catch (err) {
+      setNewsletterStatus("error");
+      setNewsletterMessage("An error occurred. Please try again.");
+      showToast("Network error", "error");
+    }
+  };
 
   const featuredItems: FeaturedItem[] = [
     {
@@ -390,6 +474,169 @@ export default function HomePage() {
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* ─── TOP CONTRIBUTORS SECTION ─── */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="flex justify-between items-end mb-10">
+          <div>
+            <Badge variant="success" className="px-3 py-1 mb-4">
+              Community
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-950 dark:text-white font-heading">
+              Top Contributors
+            </h2>
+          </div>
+          <Link href="/artisans" className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm hover:underline hidden sm:block">
+            View all artisans &rarr;
+          </Link>
+        </div>
+        
+        <div className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {contributors.map((contributor, idx) => (
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              key={contributor.id}
+              className="snap-start shrink-0 w-64 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm flex flex-col items-center text-center hover:shadow-md transition-shadow"
+            >
+              <Avatar src={contributor.avatar} alt={contributor.name} size="lg" className="mb-4 h-20 w-20 ring-4 ring-emerald-50 dark:ring-emerald-900/30" />
+              <h3 className="font-bold text-zinc-950 dark:text-white text-lg">
+                {contributor.name}
+              </h3>
+              <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-4">
+                {contributor.role}
+              </p>
+              <div className="mt-auto w-full pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+                <span className="text-zinc-500 text-xs">Sales</span>
+                <span className="font-bold text-zinc-900 dark:text-white">{contributor.sales}</span>
+              </div>
+            </motion.div>
+          ))}
+          {contributors.length === 0 && (
+            <div className="w-full text-center py-12 text-zinc-500">
+              Loading contributors...
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ─── BLOG PREVIEW SECTION ─── */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center space-y-4 mb-16">
+          <Badge variant="success" className="px-3 py-1">
+            Journal
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-950 dark:text-white font-heading">
+            Stories from the Workshop
+          </h2>
+          <p className="text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
+            Dive into artisan techniques, sustainable practices, and the history behind your favorite crafts.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {blogPosts.map((post, idx) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              key={post.id}
+              className="group rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-xl transition-all flex flex-col"
+            >
+              <div className="h-48 overflow-hidden relative shrink-0">
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-6 sm:p-8 flex flex-col flex-grow">
+                <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 mb-3 block">
+                  {new Date(post.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                </span>
+                <h3 className="font-bold text-xl text-zinc-950 dark:text-white mb-3 line-clamp-2">
+                  {post.title}
+                </h3>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-6 line-clamp-3 flex-grow">
+                  {post.excerpt}
+                </p>
+                <div className="mt-auto pt-4">
+                  <Link href={`/blog/${post.id}`}>
+                    <Button variant="outline" className="w-full rounded-xl">
+                      Read More
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+          {blogPosts.length === 0 && (
+            <div className="col-span-3 text-center py-12 text-zinc-500">
+              Loading stories...
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ─── NEWSLETTER CTA SECTION ─── */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="rounded-[2.5rem] bg-gradient-to-br from-zinc-900 to-zinc-950 text-white p-8 sm:p-16 shadow-2xl border border-zinc-800 relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-emerald-600/20 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-teal-600/20 blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-heading leading-tight">
+                Join our collective <br />
+                <span className="text-emerald-400">of creators.</span>
+              </h2>
+              <p className="text-zinc-400 text-lg max-w-md">
+                Get early access to exclusive drops, artisan interviews, and sustainable living tips. No spam, just craft.
+              </p>
+            </div>
+            
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 rounded-3xl">
+              <form onSubmit={handleNewsletterSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="sr-only">Email address</label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="w-full bg-zinc-900/50 border border-zinc-700 rounded-xl px-4 py-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                    required
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  variant="primary" 
+                  className="w-full rounded-xl py-4 text-base"
+                  disabled={newsletterStatus === "loading"}
+                >
+                  {newsletterStatus === "loading" ? "Subscribing..." : "Subscribe Now"}
+                </Button>
+                
+                {newsletterMessage && (
+                  <p className={`text-sm text-center mt-2 ${newsletterStatus === "success" ? "text-emerald-400" : "text-red-400"}`}>
+                    {newsletterMessage}
+                  </p>
+                )}
+              </form>
+            </div>
+          </div>
+        </motion.div>
       </section>
     </div>
   );
