@@ -1,255 +1,129 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useSession, authClient } from "@/app/lib/auth-client";
-import { useTheme } from "@/providers/theme-provider";
-import { useToast } from "@/providers/toast-provider";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Package, User } from 'lucide-react';
+import { MobileNavigation } from './MobileNavigation';
+import { Button } from '../ui/Button';
+import Avatar from '../ui/Avatar';
+import { useSession, signOut } from '@/app/lib/auth-client';
+import { usePathname } from 'next/navigation';
 
-export default function Navbar() {
+export function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const { data: session } = useSession();
   const pathname = usePathname();
-  const router = useRouter();
-  const { data: session, isPending } = useSession();
-  const { theme, toggleTheme } = useTheme();
-  const { showToast } = useToast();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const isHomePage = pathname === '/';
 
-  const navLinks = [
-    { name: "Explore", href: "/explore" },
-    { name: "Blog", href: "/blog" },
-    { name: "About", href: "/about" },
-    { name: "FAQ", href: "/faq" },
-  ];
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    
+    // Always check immediately
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const isTransparent = isHomePage && !scrolled;
 
   const handleLogout = async () => {
-    try {
-      await authClient.signOut();
-      showToast("Logged out successfully", "success");
-      router.push("/login");
-    } catch {
-      showToast("Failed to logout", "error");
-    }
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = "/";
+        }
+      }
+    });
   };
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-              CraftNest
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+        isTransparent 
+          ? 'bg-transparent text-white border-transparent py-4' 
+          : 'bg-white/95 dark:bg-zinc-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-950/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-white py-2'
+      }`}
+    >
+      <div className="container flex h-16 items-center mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex gap-6 md:gap-10">
+          <Link href="/" className="flex items-center space-x-2 group">
+            <Package className={`h-7 w-7 transition-colors ${isTransparent ? 'text-white' : 'text-emerald-600 dark:text-emerald-450'}`} />
+            <span className="inline-block font-bold text-2xl font-heading tracking-tight">CraftNest</span>
+          </Link>
+          <nav className="hidden md:flex gap-8 items-center">
+            <Link 
+              href="/explore" 
+              className={`text-sm font-medium transition-colors hover:text-emerald-400 ${
+                isTransparent ? 'text-white/90' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+            >
+              Explore
             </Link>
-          </div>
-
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${
-                    isActive ? "text-emerald-600 dark:text-emerald-400 font-semibold" : "text-zinc-600 dark:text-zinc-400"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Action Buttons / User Menu */}
-          <div className="hidden md:flex items-center space-x-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+            <Link 
+              href="/blog" 
+              className={`text-sm font-medium transition-colors hover:text-emerald-400 ${
+                isTransparent ? 'text-white/90' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+              }`}
             >
-              {theme === "light" ? (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                </svg>
-              )}
-            </button>
-
-            {/* Auth Actions */}
-            {isPending ? (
-              <div className="h-8 w-8 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
-            ) : session?.user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center space-x-2 rounded-full focus:outline-none"
-                >
-                  <div className="h-8 w-8 overflow-hidden rounded-full border border-zinc-200 dark:border-zinc-800">
-                    <img
-                      src={session.user.image || `https://api.dicebear.com/7.x/initials/svg?seed=${session.user.name}`}
-                      alt="avatar"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </button>
-
-                <AnimatePresence>
-                  {dropdownOpen && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute right-0 mt-2 z-50 w-48 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
-                      >
-                        <div className="px-4 py-2 border-b border-zinc-100 dark:border-zinc-800">
-                          <p className="text-sm font-semibold text-zinc-950 dark:text-white truncate">
-                            {session.user.name}
-                          </p>
-                          <p className="text-xs text-zinc-500 truncate">{session.user.email}</p>
-                        </div>
-                        <Link
-                          href="/dashboard"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                        >
-                          Dashboard
-                        </Link>
-                        <button
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            handleLogout();
-                          }}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100 dark:text-red-400 dark:hover:bg-zinc-800"
-                        >
-                          Logout
-                        </button>
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Link
-                  href="/login"
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/register"
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
-                >
-                  Sign up
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center space-x-2">
-            <button
-              onClick={toggleTheme}
-              className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none dark:text-zinc-400 dark:hover:bg-zinc-900"
-            >
-              {theme === "light" ? (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                </svg>
-              )}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 focus:outline-none dark:text-zinc-400 dark:hover:bg-zinc-900"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
+              Journal
+            </Link>
+          </nav>
         </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-zinc-200 bg-white px-4 py-2 dark:border-zinc-800 dark:bg-zinc-950 md:hidden"
-          >
-            <div className="flex flex-col gap-2 py-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg px-3 py-2 text-base font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
-                >
-                  {link.name}
-                </Link>
-              ))}
-
-              <hr className="my-2 border-zinc-200 dark:border-zinc-800" />
-
-              {session?.user ? (
+        
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <nav className="flex items-center space-x-2">
+            <div className="hidden md:flex space-x-4 items-center">
+              {session ? (
                 <>
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="rounded-lg px-3 py-2 text-base font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
-                  >
-                    Dashboard
+                  <Link href="/dashboard">
+                    <Button variant={isTransparent ? 'outline' : 'ghost'} className={isTransparent ? 'text-white border-white hover:bg-white hover:text-emerald-900' : ''}>
+                      Dashboard
+                    </Button>
                   </Link>
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="w-full text-left rounded-lg px-3 py-2 text-base font-medium text-red-600 hover:bg-zinc-100 dark:text-red-400 dark:hover:bg-zinc-900"
-                  >
-                    Logout
-                  </button>
+                  <div className="h-8 w-px bg-zinc-300/50 dark:bg-zinc-700/50 mx-2" />
+                  <Link href="/dashboard/settings" className="flex items-center gap-2 group">
+                    <Avatar 
+                      src={session.user.image} 
+                      alt={session.user.name} 
+                      size="sm" 
+                      className={`ring-2 ${isTransparent ? 'ring-white/50 group-hover:ring-white' : 'ring-emerald-500/20 group-hover:ring-emerald-500'}`} 
+                    />
+                  </Link>
                 </>
               ) : (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex justify-center rounded-lg border border-zinc-300 px-4 py-2 text-base font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
-                  >
-                    Sign in
+                <>
+                  <Link href="/login">
+                    <Button variant={isTransparent ? 'outline' : 'ghost'} className={isTransparent ? 'text-white border-transparent hover:bg-white/20' : ''}>
+                      Sign In
+                    </Button>
                   </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex justify-center rounded-lg bg-emerald-600 px-4 py-2 text-base font-medium text-white hover:bg-emerald-500"
-                  >
-                    Sign up
+                  <Link href="/register">
+                    <Button variant={isTransparent ? 'outline' : 'primary'} className={isTransparent ? 'text-emerald-900 bg-white border-transparent hover:bg-zinc-100' : 'rounded-xl'}>
+                      Sign Up
+                    </Button>
                   </Link>
-                </div>
+                </>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+            
+            <div className="md:hidden flex items-center">
+              {session && (
+                <Link href="/dashboard/settings" className="mr-4">
+                  <Avatar src={session.user.image} alt={session.user.name} size="sm" />
+                </Link>
+              )}
+              <MobileNavigation isTransparent={isTransparent} session={session} onLogout={handleLogout} />
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
   );
 }

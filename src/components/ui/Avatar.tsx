@@ -1,38 +1,42 @@
-import React from "react";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-type AvatarProps = {
+export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   src?: string | null;
   alt?: string;
-  size?: "sm" | "md" | "lg";
-  className?: string;
-};
+  fallback?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+}
 
-export default function Avatar({
-  src,
-  alt = "User avatar",
-  size = "md",
-  className = "",
-}: AvatarProps) {
+export function Avatar({ className, src, alt, fallback, size = 'md', ...props }: AvatarProps) {
   const sizes = {
-    sm: "h-8 w-8 text-xs",
-    md: "h-10 w-10 text-sm",
-    lg: "h-16 w-16 text-xl",
+    sm: 'h-8 w-8 text-xs',
+    md: 'h-10 w-10 text-sm',
+    lg: 'h-12 w-12 text-base',
+    xl: 'h-16 w-16 text-lg',
   };
-
-  const placeholderUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(alt)}`;
 
   return (
     <div
-      className={`relative inline-block overflow-hidden rounded-full border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800 ${sizes[size]} ${className}`}
+      className={cn(
+        'relative flex shrink-0 overflow-hidden rounded-full bg-muted items-center justify-center',
+        sizes[size],
+        className
+      )}
+      {...props}
     >
-      <img
-        src={src || placeholderUrl}
-        alt={alt}
-        className="h-full w-full object-cover"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = placeholderUrl;
-        }}
-      />
+      {src ? (
+        <img
+          src={src}
+          alt={alt || 'Avatar'}
+          className="aspect-square h-full w-full object-cover"
+        />
+      ) : (
+        <span className="font-medium uppercase text-muted-foreground">
+          {fallback || alt?.charAt(0) || '?'}
+        </span>
+      )}
     </div>
   );
 }
+export default Avatar;

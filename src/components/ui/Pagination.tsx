@@ -1,7 +1,5 @@
-"use client";
-
-import React from "react";
-import Button from "./Button";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from './Button';
 
 interface PaginationProps {
   currentPage: number;
@@ -9,28 +7,30 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex justify-center items-center gap-2 mt-8">
+    <div className="flex items-center justify-center space-x-2 py-4">
       <Button
         variant="outline"
-        disabled={currentPage === 1}
+        size="icon"
         onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage <= 1}
       >
-        Previous
+        <ChevronLeft className="h-4 w-4" />
       </Button>
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <div className="text-sm font-medium">
         Page {currentPage} of {totalPages}
-      </span>
+      </div>
       <Button
         variant="outline"
-        disabled={currentPage === totalPages}
+        size="icon"
         onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
       >
-        Next
+        <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
   );
-};
+}

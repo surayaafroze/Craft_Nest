@@ -8,6 +8,8 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
 import Avatar from "@/components/ui/Avatar";
+import { CategoryShowcase } from "@/components/home/CategoryShowcase";
+import { TrendingItems } from "@/components/home/TrendingItems";
 
 interface FeaturedItem {
   id: string;
@@ -307,6 +309,12 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ─── CATEGORY SHOWCASE SECTION ─── */}
+      <CategoryShowcase />
+
+      {/* ─── TRENDING ITEMS SECTION ─── */}
+      <TrendingItems />
 
       {/* ─── WHY CRAFTNEST SECTION ─── */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -6,41 +6,13 @@ export const authClient = createAuthClient({
     plugins: [jwtClient()]
 });
 
-export const { signIn, signUp, useSession } = authClient;
-
-export const getValidToken = async (): Promise<string> => {
-  if (typeof window === 'undefined') return '';
-  let token = localStorage.getItem('token');
-  
-  if (!token || token === 'undefined' || token === 'null') {
-      try {
-        const res = await fetch('/api/auth/get-token');
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.token) {
-            token = data.token;
-            localStorage.setItem('token', data.token);
-          }
-        }
-      } catch (e) {
-        console.error('Failed to fetch session token', e);
-      }
-  }
-  return token || '';
-};
+export const { signIn, signUp, signOut, useSession } = authClient;
 
 // ─── Authenticated fetch helper ───────────────────────────────────────────────
-// Automatically attaches Bearer token for cross-origin API calls on production.
-// Falls back gracefully if token is unavailable.
+// Uses HTTP-only cookies securely synced via backend_jwt.
 export const authFetch = async (url: string | URL, options: RequestInit = {}): Promise<Response> => {
-  const token = await getValidToken();
-  const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string> || {}),
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-  };
   return fetch(url, {
     credentials: 'include',
     ...options,
-    headers,
   });
 };
