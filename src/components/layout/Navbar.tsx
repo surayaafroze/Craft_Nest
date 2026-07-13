@@ -43,34 +43,32 @@ export function Navbar() {
     });
   };
 
+  if (pathname?.startsWith('/dashboard')) return null;
+
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         isTransparent 
-          ? 'bg-transparent text-white border-transparent py-4' 
+          ? 'bg-transparent text-zinc-950 dark:text-white border-transparent py-4' 
           : 'bg-white/95 dark:bg-zinc-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-950/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-white py-2'
       }`}
     >
       <div className="container flex h-16 items-center mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2 group">
-            <Package className={`h-7 w-7 transition-colors ${isTransparent ? 'text-white' : 'text-emerald-600 dark:text-emerald-450'}`} />
+            <Package className="h-7 w-7 transition-colors text-emerald-600 dark:text-emerald-450" />
             <span className="inline-block font-bold text-2xl font-heading tracking-tight">CraftNest</span>
           </Link>
           <nav className="hidden md:flex gap-8 items-center">
             <Link 
               href="/explore" 
-              className={`text-sm font-medium transition-colors hover:text-emerald-400 ${
-                isTransparent ? 'text-white/90' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
-              }`}
+              className="text-sm font-medium transition-colors text-zinc-600 dark:text-zinc-300 hover:text-emerald-600 dark:hover:text-emerald-400"
             >
               Explore
             </Link>
             <Link 
               href="/blog" 
-              className={`text-sm font-medium transition-colors hover:text-emerald-400 ${
-                isTransparent ? 'text-white/90' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
-              }`}
+              className="text-sm font-medium transition-colors text-zinc-600 dark:text-zinc-300 hover:text-emerald-600 dark:hover:text-emerald-400"
             >
               Journal
             </Link>
@@ -83,7 +81,7 @@ export function Navbar() {
               {session ? (
                 <>
                   <Link href="/dashboard">
-                    <Button variant={isTransparent ? 'outline' : 'ghost'} className={isTransparent ? 'text-white border-white hover:bg-white hover:text-emerald-900' : ''}>
+                    <Button variant={isTransparent ? 'outline' : 'ghost'} className={isTransparent ? 'text-zinc-900 border-zinc-200 hover:bg-zinc-100 dark:text-white dark:border-zinc-700 dark:hover:bg-zinc-800' : ''}>
                       Dashboard
                     </Button>
                   </Link>
@@ -93,19 +91,19 @@ export function Navbar() {
                       src={session.user.image} 
                       alt={session.user.name} 
                       size="sm" 
-                      className={`ring-2 ${isTransparent ? 'ring-white/50 group-hover:ring-white' : 'ring-emerald-500/20 group-hover:ring-emerald-500'}`} 
+                      className={`ring-2 ${isTransparent ? 'ring-zinc-200 dark:ring-zinc-700 group-hover:ring-emerald-500' : 'ring-emerald-500/20 group-hover:ring-emerald-500'}`} 
                     />
                   </Link>
                 </>
               ) : (
                 <>
                   <Link href="/login">
-                    <Button variant={isTransparent ? 'outline' : 'ghost'} className={isTransparent ? 'text-white border-transparent hover:bg-white/20' : ''}>
+                    <Button variant={isTransparent ? 'outline' : 'ghost'} className={isTransparent ? 'text-zinc-700 border-transparent hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' : ''}>
                       Sign In
                     </Button>
                   </Link>
                   <Link href="/register">
-                    <Button variant={isTransparent ? 'outline' : 'primary'} className={isTransparent ? 'text-emerald-900 bg-white border-transparent hover:bg-zinc-100' : 'rounded-xl'}>
+                    <Button variant="primary" className="rounded-xl shadow-sm">
                       Sign Up
                     </Button>
                   </Link>
