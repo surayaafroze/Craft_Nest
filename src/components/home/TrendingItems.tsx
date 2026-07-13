@@ -22,8 +22,8 @@ export function TrendingItems() {
         const res = await fetch(`${serverUrl}/api/items?sortBy=avgRating&sortOrder=desc&limit=8`);
         const data = await res.json();
         
-        if (res.ok && data.success) {
-          setItems(data.data.items || []);
+        if (res.ok) {
+          setItems(data.items || []);
         } else {
           setError(true);
         }
