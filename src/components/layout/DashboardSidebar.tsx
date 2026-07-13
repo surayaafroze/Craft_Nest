@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
   LayoutDashboard, 
@@ -16,12 +17,14 @@ import {
   TrendingUp,
   LogOut
 } from 'lucide-react';
-import { useUser } from '@/hooks/useUser';
+import { useSession, authClient } from '@/app/lib/auth-client';
+import toast from 'react-hot-toast';
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const { user } = useUser();
-  const isAdmin = (user as any)?.role === 'admin';
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.role === 'admin';
 
   const userLinks = [
     { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
@@ -39,11 +42,21 @@ export function DashboardSidebar() {
     { href: '/dashboard/admin/analytics', label: 'Platform Analytics', icon: TrendingUp },
   ];
 
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut();
+      toast.success("Signed out successfully");
+      router.push('/login');
+    } catch (err) {
+      toast.error("Failed to sign out");
+    }
+  };
+
   return (
-    <aside className="w-64 border-r bg-muted/20 hidden md:block min-h-[calc(100vh-4rem)]">
-      <div className="flex h-full flex-col py-6 px-3">
-        <div className="space-y-1 mb-8">
-          <h4 className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+    <aside className="w-72 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 hidden md:block min-h-[calc(100vh-4.5rem)]">
+      <div className="flex h-full flex-col py-8 px-4">
+        <div className="space-y-1.5 mb-10">
+          <h4 className="px-4 text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4 font-heading">
             Dashboard
           </h4>
           {userLinks.map((link) => {
@@ -54,22 +67,30 @@ export function DashboardSidebar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'relative flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors',
                   isActive 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    ? 'text-emerald-700 dark:text-emerald-300' 
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
                 )}
               >
-                <Icon className="h-4 w-4" />
-                <span>{link.label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute inset-0 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800/50"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <Icon className="h-5 w-5 relative z-10" />
+                <span className="relative z-10">{link.label}</span>
               </Link>
             );
           })}
         </div>
 
         {isAdmin && (
-          <div className="space-y-1 mb-8">
-            <h4 className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+          <div className="space-y-1.5 mb-10">
+            <h4 className="px-4 text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4 font-heading">
               Admin Panel
             </h4>
             {adminLinks.map((link) => {
@@ -80,25 +101,34 @@ export function DashboardSidebar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    'relative flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors',
                     isActive 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'text-emerald-700 dark:text-emerald-300' 
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
                   )}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{link.label}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active"
+                      className="absolute inset-0 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800/50"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <Icon className="h-5 w-5 relative z-10" />
+                  <span className="relative z-10">{link.label}</span>
                 </Link>
               );
             })}
           </div>
         )}
 
-        <div className="mt-auto pt-4 border-t space-y-1">
+        <div className="mt-auto pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-1">
           <button
-            className="flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+            onClick={handleSignOut}
+            className="flex w-full items-center space-x-3 rounded-xl px-4 py-3 text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-5 w-5" />
             <span>Sign Out</span>
           </button>
         </div>
