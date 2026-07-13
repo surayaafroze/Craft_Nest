@@ -9,7 +9,8 @@ import { Edit2, Trash2, PlusCircle, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Pagination from "@/components/ui/Pagination";
+import { Pagination } from "@/components/ui/Pagination";
+import { confirmDeleteToast } from "@/app/lib/toastConfirm";
 
 export default function ManageItemsPage() {
   const router = useRouter();
@@ -42,7 +43,8 @@ export default function ManageItemsPage() {
   }, [fetchItems]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this item? This cannot be undone.")) return;
+    const confirmed = await confirmDeleteToast("Are you sure you want to delete this item? This cannot be undone.");
+    if (!confirmed) return;
     
     try {
       setDeletingId(id);

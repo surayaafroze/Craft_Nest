@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { RatingStars } from "@/components/items/RatingStars";
+import { confirmDeleteToast } from "@/app/lib/toastConfirm";
 
 export default function MyReviewsPage() {
   const { data: session } = useSession();
@@ -36,7 +37,8 @@ export default function MyReviewsPage() {
   }, [fetchReviews]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this review?")) return;
+    const confirmed = await confirmDeleteToast("Are you sure you want to delete this review?");
+    if (!confirmed) return;
     
     try {
       setDeletingId(id);

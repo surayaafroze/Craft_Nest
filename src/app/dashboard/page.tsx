@@ -222,8 +222,8 @@ export default function DashboardOverviewPage() {
             
             {recentItems.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {recentItems.map(item => (
-                  <ItemCard key={item.id} item={item} />
+                {recentItems.map((item, index) => (
+                  <ItemCard key={item.id} item={item} priority={index === 0} />
                 ))}
               </div>
             ) : (
