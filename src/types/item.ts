@@ -7,6 +7,10 @@ export interface Item {
   price: number;
   images: string[];
   ownerId: string;
+  owner?: {
+    name: string;
+    avatarUrl?: string | null;
+  };
   status: string;
   tags?: string[];
   quantity?: number;
