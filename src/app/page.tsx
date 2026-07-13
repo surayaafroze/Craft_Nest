@@ -148,7 +148,7 @@ export default function HomePage() {
       category: "Ceramics",
       artisan: "Elena Rostova",
       price: "$84.00",
-      image: "https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&q=80&w=800",
+      image: "/images/seed/oak-table.png",
     },
     {
       id: "f2",
@@ -156,7 +156,7 @@ export default function HomePage() {
       category: "Leather Goods",
       artisan: "Marcus Thorne",
       price: "$210.00",
-      image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&q=80&w=800",
+      image: "/images/seed/scarf.png",
     },
     {
       id: "f3",
@@ -164,7 +164,7 @@ export default function HomePage() {
       category: "Woodworking",
       artisan: "Silas Miller",
       price: "$450.00",
-      image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&q=80&w=800",
+      image: "/images/seed/leather-wallet.png",
     },
   ];
 
