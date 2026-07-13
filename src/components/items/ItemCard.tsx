@@ -4,15 +4,20 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MapPin, Star } from "lucide-react";
+import { MapPin, Star, User } from "lucide-react";
 import { Item } from "@/types/item";
+import { useSession } from "@/app/lib/auth-client";
 
 interface ItemCardProps {
   item: Item;
+  priority?: boolean;
 }
 
-export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
+export const ItemCard: React.FC<ItemCardProps> = ({ item, priority = false }) => {
   const imageUrl = item.images?.[0] || "/placeholder.svg";
+  const { data: session } = useSession();
+  
+  const isOwner = session?.user?.id === item.ownerId;
 
   return (
     <motion.div
@@ -24,6 +29,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
           src={imageUrl}
           alt={item.title}
           fill
+          priority={priority}
           unoptimized={true}
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -31,6 +37,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
         <div className="absolute top-3 right-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-emerald-700 dark:text-emerald-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
           {item.category}
         </div>
+        {(item.owner || isOwner) && (
+          <div className={`absolute top-3 left-3 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium shadow-sm border ${
+            isOwner 
+              ? 'bg-emerald-600/90 text-white border-emerald-500/50 dark:bg-emerald-500/90 dark:border-emerald-400/50' 
+              : 'bg-white/90 dark:bg-zinc-900/90 text-zinc-700 dark:text-zinc-300 border-zinc-200/50 dark:border-zinc-700/50'
+          }`}>
+            <div className="flex items-center gap-1.5">
+              {item.owner?.avatarUrl ? (
+                <img src={item.owner.avatarUrl} alt="avatar" className="w-4 h-4 rounded-full object-cover" />
+              ) : (
+                <User className="w-3.5 h-3.5" />
+              )}
+              <span>{isOwner ? 'By You' : `By ${item.owner?.name?.split(' ')[0] || 'User'}`}</span>
+            </div>
+          </div>
+        )}
       </div>
       <div className="p-5 flex flex-col flex-grow">
         <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-1 line-clamp-1 font-heading tracking-tight">

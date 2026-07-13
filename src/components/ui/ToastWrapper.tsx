@@ -16,7 +16,7 @@ export function ToastWrapper() {
 
   return (
     <Toaster
-      position="bottom-right"
+      position="top-center"
       toastOptions={{
         className: 'text-sm font-medium',
         style: {

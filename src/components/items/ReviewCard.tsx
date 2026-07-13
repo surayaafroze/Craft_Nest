@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Review } from "@/types/review";
 import { RatingStars } from "./RatingStars";
 import { Button } from "../ui/Button";
+import { confirmDeleteToast } from "@/app/lib/toastConfirm";
 
 interface ReviewCardProps {
   review: Review;
@@ -19,10 +20,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 
   const handleDelete = async () => {
     if (!onDelete) return;
-    if (confirm("Are you sure you want to delete this review?")) {
+    const confirmed = await confirmDeleteToast("Are you sure you want to delete this review?");
+    if (confirmed) {
       setIsDeleting(true);
       await onDelete(review.id);
-      // The parent will remove it from the list or we stop loading
       setIsDeleting(false);
     }
   };
