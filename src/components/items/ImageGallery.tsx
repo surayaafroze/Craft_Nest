@@ -13,8 +13,8 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
 
   if (!images || images.length === 0) {
     return (
-      <div className="w-full aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center border border-gray-200 dark:border-gray-700">
-        <span className="text-gray-400 dark:text-gray-500">No Image Available</span>
+      <div className="w-full aspect-[4/3] bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
+        <span className="text-zinc-400 dark:text-zinc-500 font-medium">No Image Available</span>
       </div>
     );
   }
@@ -22,7 +22,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
   return (
     <div className="space-y-4">
       {/* Main Image */}
-      <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -36,6 +36,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
               src={images[currentIndex]}
               alt={`Item image ${currentIndex + 1}`}
               fill
+              unoptimized={true}
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
@@ -45,21 +46,22 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide py-1">
           {images.map((img, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 transition-all ${
                 currentIndex === index
-                  ? "ring-2 ring-teal-500 ring-offset-2 dark:ring-offset-gray-900"
-                  : "opacity-70 hover:opacity-100"
+                  ? "ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-zinc-950 scale-[1.02]"
+                  : "opacity-60 hover:opacity-100 border border-zinc-200 dark:border-zinc-700"
               }`}
             >
               <Image
                 src={img}
                 alt={`Thumbnail ${index + 1}`}
                 fill
+                unoptimized={true}
                 className="object-cover"
                 sizes="80px"
               />
