@@ -93,7 +93,7 @@ export default function LoginPage() {
 
   return (
     <GuestGuard>
-      <div className="flex min-h-[80vh] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="flex min-h-[80vh] items-center justify-center px-4 pt-28 pb-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 border border-zinc-100 shadow-xl dark:bg-zinc-900 dark:border-zinc-800 transition-colors">
           <div>
             <h2 className="text-center text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
