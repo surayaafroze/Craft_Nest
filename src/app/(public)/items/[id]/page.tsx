@@ -17,6 +17,7 @@ import { ItemCard } from "@/components/items/ItemCard";
 import { ItemCardSkeleton } from "@/components/items/ItemCardSkeleton";
 import ErrorState from "@/components/ui/ErrorState";
 import { Button } from "@/components/ui/Button";
+import { confirmDeleteToast } from "@/app/lib/toastConfirm";
 
 export default function ItemDetailsPage() {
   const params = useParams();
@@ -112,7 +113,8 @@ export default function ItemDetailsPage() {
   };
 
   const handleDeleteItem = async () => {
-    if (!confirm("Are you sure you want to delete this item? This action cannot be undone.")) return;
+    const confirmed = await confirmDeleteToast("Are you sure you want to delete this item? This action cannot be undone.");
+    if (!confirmed) return;
     
     try {
       setIsDeletingItem(true);
@@ -187,7 +189,7 @@ export default function ItemDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pt-28 pb-12 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-zinc-500">Loading item details...</p>
@@ -198,7 +200,7 @@ export default function ItemDetailsPage() {
 
   if (error || !item) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
         <ErrorState
           title="Oops!"
           description={error || "Item not found."}
@@ -214,7 +216,7 @@ export default function ItemDetailsPage() {
   const hasReviewed = reviews.some(r => r.user?.id === currentUser?.id);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pt-28 pb-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-16">
         
         {/* Top Section: Images & Details */}
