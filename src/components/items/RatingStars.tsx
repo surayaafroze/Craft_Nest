@@ -39,8 +39,8 @@ export const RatingStars: React.FC<RatingStarsProps> = ({
           <svg
             className={`${sizeClasses[size]} ${
               star <= rating
-                ? "text-yellow-400 fill-yellow-400"
-                : "text-gray-300 dark:text-gray-600 fill-gray-300 dark:fill-gray-600"
+                ? "text-amber-400 fill-amber-400"
+                : "text-zinc-200 dark:text-zinc-700 fill-zinc-200 dark:fill-zinc-700"
             } transition-colors duration-200`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

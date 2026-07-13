@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { RatingStars } from "./RatingStars";
-import Button from "../ui/Button";
+import { Button } from "../ui/Button";
+import FormTextarea from "../ui/FormTextarea";
 
 interface ReviewFormProps {
   onSubmit: (rating: number, comment: string) => Promise<void>;
@@ -39,37 +40,34 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Leave a Review</h3>
+    <form onSubmit={handleSubmit} className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+      <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6 font-heading tracking-tight">Leave a Review</h3>
       
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium">
           {error}
         </div>
       )}
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <div className="mb-6">
+        <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
           Rating
         </label>
         <RatingStars rating={rating} size="lg" interactive onRatingChange={setRating} />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="comment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Review Comment
-        </label>
-        <textarea
+      <div className="mb-6">
+        <FormTextarea
           id="comment"
+          label="Review Comment"
           rows={4}
-          className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-shadow"
           placeholder="What did you think about this item?"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
       </div>
 
-      <Button type="submit" loading={isSubmitting} disabled={isSubmitting} className="w-full sm:w-auto">
+      <Button type="submit" loading={isSubmitting} disabled={isSubmitting} className="w-full rounded-xl">
         Submit Review
       </Button>
     </form>
