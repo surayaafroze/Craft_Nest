@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ItemCard } from "@/components/items/ItemCard";
 import { ItemCardSkeleton } from "@/components/items/ItemCardSkeleton";
@@ -13,46 +14,71 @@ import EmptyState from "@/components/ui/EmptyState";
 import ErrorState from "@/components/ui/ErrorState";
 import { Item, PaginatedItemsResponse } from "@/types/item";
 
-export default function ExplorePage() {
+function ExploreContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamsString = searchParams.toString();
+
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // States
-  const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState({
-    category: "",
-    minPrice: "",
-    maxPrice: "",
-    rating: "",
-    location: "",
-  });
-  // Active filters which trigger API calls (applied filters)
-  const [appliedFilters, setAppliedFilters] = useState(filters);
-  const [sort, setSort] = useState<SortOption>({ sortBy: "createdAt", sortOrder: "desc" });
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+
+  // Derive applied state from URL
+  const search = searchParams.get("search") || "";
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const sortOption: SortOption = {
+    sortBy: searchParams.get("sortBy") || "createdAt",
+    sortOrder: (searchParams.get("sortOrder") as "asc" | "desc") || "desc",
+  };
+  
+  // Local state for filters to avoid triggering API on every keystroke
+  const [localFilters, setLocalFilters] = useState({
+    category: searchParams.get("category") || "",
+    minPrice: searchParams.get("minPrice") || "",
+    maxPrice: searchParams.get("maxPrice") || "",
+    rating: searchParams.get("rating") || "",
+    location: searchParams.get("location") || "",
+  });
+
+  // Sync local filters with URL if URL changes externally
+  useEffect(() => {
+    const params = new URLSearchParams(searchParamsString);
+    setLocalFilters({
+      category: params.get("category") || "",
+      minPrice: params.get("minPrice") || "",
+      maxPrice: params.get("maxPrice") || "",
+      rating: params.get("rating") || "",
+      location: params.get("location") || "",
+    });
+  }, [searchParamsString]);
+
+  const updateURL = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    });
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, pathname, router]);
+
+
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
-      
-      const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      if (appliedFilters.category) params.append("category", appliedFilters.category);
-      if (appliedFilters.minPrice) params.append("minPrice", appliedFilters.minPrice);
-      if (appliedFilters.maxPrice) params.append("maxPrice", appliedFilters.maxPrice);
-      // Rating and Location are optional frontend filters, passed to backend for potential future use or custom logic
-      if (appliedFilters.rating) params.append("rating", appliedFilters.rating);
-      if (appliedFilters.location) params.append("location", appliedFilters.location);
-      
-      params.append("sortBy", sort.sortBy);
-      params.append("sortOrder", sort.sortOrder);
-      params.append("page", page.toString());
-      params.append("limit", "12");
+      const params = new URLSearchParams(searchParamsString);
+      if (!params.has("sortBy")) params.append("sortBy", sortOption.sortBy);
+      if (!params.has("sortOrder")) params.append("sortOrder", sortOption.sortOrder);
+      if (!params.has("page")) params.append("page", page.toString());
+      params.set("limit", "9");
 
       const response = await fetch(`${serverUrl}/api/items?${params.toString()}`);
       if (!response.ok) {
@@ -67,40 +93,40 @@ export default function ExplorePage() {
     } finally {
       setLoading(false);
     }
-  }, [search, appliedFilters, sort, page]);
+  }, [searchParamsString, sortOption.sortBy, sortOption.sortOrder, page]);
 
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
 
-  const handleApplyFilters = () => {
-    setAppliedFilters(filters);
-    setPage(1); // reset to page 1 on filter change
-  };
+  const handleApplyFilters = useCallback(() => {
+    updateURL({
+      ...localFilters,
+      page: "1", // reset page on filter change
+    });
+  }, [updateURL, localFilters]);
 
-  const handleSearch = (newSearch: string) => {
-    setSearch(newSearch);
-    setPage(1);
-  };
+  const handleSearch = useCallback((newSearch: string) => {
+    updateURL({ search: newSearch, page: "1" });
+  }, [updateURL]);
 
-  const handleSortChange = (newSort: SortOption) => {
-    setSort(newSort);
-    setPage(1);
-  };
+  const handleSortChange = useCallback((newSort: SortOption) => {
+    updateURL({ sortBy: newSort.sortBy, sortOrder: newSort.sortOrder, page: "1" });
+  }, [updateURL]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8 pt-28">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl font-heading">
-            Explore <span className="text-teal-600 dark:text-teal-400">Items</span>
+          <h1 className="text-4xl font-extrabold text-zinc-900 dark:text-white sm:text-5xl font-heading tracking-tight">
+            Explore <span className="text-emerald-600 dark:text-emerald-450">Items</span>
           </h1>
-          <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">
-            Discover unique crafted items from our community.
+          <p className="mt-4 text-xl text-zinc-600 dark:text-zinc-400">
+            Discover unique handcrafted items from our community.
           </p>
         </motion.div>
 
@@ -111,31 +137,33 @@ export default function ExplorePage() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="hidden lg:block w-64 flex-shrink-0"
+            className="hidden lg:block w-72 flex-shrink-0"
           >
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 sticky top-28">
               <FilterSidebar
-                filters={filters}
-                onFilterChange={setFilters}
+                filters={localFilters}
+                onFilterChange={setLocalFilters}
                 onApply={handleApplyFilters}
+                onCategoryChange={(cat) => updateURL({ ...localFilters, category: cat, page: "1" })}
               />
             </div>
           </motion.div>
 
           {/* Main Content */}
-          <div className="flex-1">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800">
               <div className="flex items-center gap-4">
                 <FilterDrawer
-                  filters={filters}
-                  onFilterChange={setFilters}
+                  filters={localFilters}
+                  onFilterChange={setLocalFilters}
                   onApply={handleApplyFilters}
+                  onCategoryChange={(cat) => updateURL({ ...localFilters, category: cat, page: "1" })}
                 />
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-zinc-600 dark:text-zinc-400 font-medium">
                   Showing {loading ? "..." : totalItems} results
                 </p>
               </div>
-              <SortDropdown value={sort} onChange={handleSortChange} />
+              <SortDropdown value={sortOption} onChange={handleSortChange} />
             </div>
 
             <AnimatePresence mode="wait">
@@ -195,12 +223,20 @@ export default function ExplorePage() {
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}
-                onPageChange={setPage}
+                onPageChange={(p) => updateURL({ page: p.toString() })}
               />
             )}
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-12 flex items-center justify-center"><ItemCardSkeleton /></div>}>
+      <ExploreContent />
+    </Suspense>
   );
 }

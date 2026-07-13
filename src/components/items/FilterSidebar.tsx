@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FormInput from "../ui/FormInput";
 import FormSelect from "../ui/FormSelect";
-import Button from "../ui/Button";
+import { Button } from "../ui/Button";
 
 interface Filters {
   category: string;
@@ -17,23 +17,39 @@ interface FilterSidebarProps {
   filters: Filters;
   onFilterChange: (filters: Filters) => void;
   onApply: () => void;
+  onCategoryChange?: (category: string) => void;
 }
-
-const CATEGORIES = [
-  { value: "", label: "All Categories" },
-  { value: "Woodworking", label: "Woodworking" },
-  { value: "Pottery", label: "Pottery" },
-  { value: "Textiles", label: "Textiles" },
-  { value: "Jewelry", label: "Jewelry" },
-  { value: "Leather", label: "Leather" },
-  { value: "Glass", label: "Glass" },
-];
 
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   filters,
   onFilterChange,
   onApply,
+  onCategoryChange,
 }) => {
+  const [categories, setCategories] = useState<{ value: string; label: string }[]>([
+    { value: "", label: "All Categories" },
+  ]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+        const res = await fetch(`${serverUrl}/api/categories`);
+        const data = await res.json();
+        if (data.success) {
+          const formattedCategories = data.data.map((c: any) => ({
+            value: c.name,
+            label: c.name,
+          }));
+          setCategories([{ value: "", label: "All Categories" }, ...formattedCategories]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const handleChange = (field: keyof Filters, value: string) => {
     onFilterChange({ ...filters, [field]: value });
   };
@@ -41,7 +57,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Filters</h3>
+        <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6 font-heading tracking-tight">Filters</h3>
       </div>
       
       <div>
@@ -49,16 +65,21 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
           label="Category"
           name="category"
           value={filters.category}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange("category", e.target.value)}
-          options={CATEGORIES}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+            handleChange("category", e.target.value);
+            if (onCategoryChange) {
+              onCategoryChange(e.target.value);
+            }
+          }}
+          options={categories}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
           Price Range
         </label>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <FormInput
             type="number"
             name="minPrice"
@@ -67,7 +88,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("minPrice", e.target.value)}
             min="0"
           />
-          <span className="text-gray-500">-</span>
+          <span className="text-zinc-500">-</span>
           <FormInput
             type="number"
             name="maxPrice"
@@ -105,7 +126,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         />
       </div>
 
-      <Button onClick={onApply} className="w-full">
+      <Button onClick={onApply} className="w-full rounded-xl">
         Apply Filters
       </Button>
     </div>

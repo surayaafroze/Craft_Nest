@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 interface SearchBarProps {
@@ -10,10 +10,14 @@ interface SearchBarProps {
 
 export const SearchBar: React.FC<SearchBarProps> = ({ initialSearch = "", onSearch }) => {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const lastSearchedTerm = useRef(initialSearch);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      onSearch(searchTerm);
+      if (searchTerm !== lastSearchedTerm.current) {
+        lastSearchedTerm.current = searchTerm;
+        onSearch(searchTerm);
+      }
     }, 500);
 
     return () => clearTimeout(handler);
