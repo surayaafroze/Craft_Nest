@@ -85,7 +85,7 @@ export default function ManageUsersPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <Badge variant={user.role === 'admin' ? 'primary' : 'outline'} className="capitalize">
+                    <Badge variant={user.role === 'admin' ? 'default' : 'outline'} className="capitalize">
                       {user.role === 'admin' ? <Shield className="w-3 h-3 mr-1" /> : <Users className="w-3 h-3 mr-1" />}
                       {user.role}
                     </Badge>

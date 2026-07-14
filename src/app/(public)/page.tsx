@@ -250,7 +250,7 @@ export default function HomePage() {
             ) : trendingItems.length > 0 ? (
               trendingItems.map((item, i) => (
                 <motion.div 
-                  key={item._id || item.id}
+                  key={(item as any)._id || item.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}

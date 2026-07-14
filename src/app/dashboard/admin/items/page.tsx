@@ -90,7 +90,7 @@ export default function ModerateItemsPage() {
                   <div className="flex h-full items-center justify-center text-zinc-400">No Image</div>
                 )}
                 <div className="absolute top-2 right-2">
-                  <Badge variant={item.status === 'pending' ? 'warning' : item.status === 'approved' ? 'success' : 'destructive'} className="capitalize backdrop-blur-md bg-white/90 dark:bg-zinc-900/90">
+                  <Badge variant={item.status === 'pending' ? 'secondary' : item.status === 'approved' ? 'success' : 'destructive'} className="capitalize backdrop-blur-md bg-white/90 dark:bg-zinc-900/90">
                     {item.status === 'pending' && <Clock className="w-3 h-3 mr-1" />}
                     {item.status === 'approved' && <Check className="w-3 h-3 mr-1" />}
                     {item.status === 'rejected' && <X className="w-3 h-3 mr-1" />}
