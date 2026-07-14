@@ -32,6 +32,18 @@ By utilizing vegetable tanning methods—using natural tannins from tree bark in
 
 Choosing sustainable, handcrafted leather goods means supporting an eco-friendly economy and ensuring that the products we bring into our lives are crafted with respect for the planet.`
   },
+  "sustainable-materials": {
+    title: "Sustainable Leather Sourcing",
+    category: "Sustainability",
+    date: "July 13, 2026",
+    author: "James Chen",
+    image: "/images/seed/leather-wallet.png",
+    content: `In an era of fast fashion and disposable goods, the shift towards sustainable materials is more critical than ever. The leather industry has historically been scrutinized for its environmental impact, but ethical tanneries are changing the landscape.
+
+By utilizing vegetable tanning methods—using natural tannins from tree bark instead of harmful chemicals like chromium—artisans can create beautiful, durable leather goods without the toxic runoff. This process takes much longer, often months instead of days, but the result is a product that ages gracefully and develops a unique patina over time.
+
+Choosing sustainable, handcrafted leather goods means supporting an eco-friendly economy and ensuring that the products we bring into our lives are crafted with respect for the planet.`
+  },
   "wood-joinery": {
     title: "Mastering Wood Joinery",
     category: "Behind the Scenes",

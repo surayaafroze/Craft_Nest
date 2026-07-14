@@ -7,28 +7,28 @@ import { ArrowRight } from "lucide-react";
 
 const BLOG_POSTS = [
   {
-    slug: "art-of-pottery",
-    title: "The Art of Handcrafted Pottery",
-    excerpt: "Discover the ancient techniques modern artisans use to create stunning, durable ceramics for your home.",
+    slug: "ceramic-glazing",
+    title: "The Art of Ceramic Glazing",
+    excerpt: "Discover the hidden techniques master artisans use to achieve perfect glass-like finishes on their pottery.",
     category: "Craftsmanship",
-    date: "July 12, 2026",
+    date: "July 13, 2026",
     image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=800&auto=format&fit=crop"
   },
   {
-    slug: "sustainable-materials",
-    title: "Why Sustainable Materials Matter",
-    excerpt: "How independent makers are reducing their carbon footprint by sourcing local and recycled materials.",
+    slug: "sustainable-leather",
+    title: "Sustainable Leather Sourcing",
+    excerpt: "How ethical tanneries are changing the landscape of handmade leather goods without compromising quality.",
     category: "Sustainability",
-    date: "July 05, 2026",
+    date: "July 13, 2026",
     image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop"
   },
   {
-    slug: "textile-weaving",
-    title: "A Deep Dive into Traditional Weaving",
-    excerpt: "From loom to living room, explore the intricate process of creating handwoven textiles.",
+    slug: "wood-joinery",
+    title: "Mastering Wood Joinery",
+    excerpt: "A beginner’s guide to understanding dovetails, mortise, and tenon joints in custom furniture design.",
     category: "Behind the Scenes",
-    date: "June 28, 2026",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166?q=80&w=800&auto=format&fit=crop"
+    date: "July 13, 2026",
+    image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=800&auto=format&fit=crop"
   }
 ];
 
