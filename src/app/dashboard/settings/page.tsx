@@ -56,7 +56,7 @@ export default function DashboardSettingsPage() {
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
-        const res = await authFetch(`${serverUrl}/api/users/me`);
+        const res = await authFetch(`/api/backend/users/me`);
         
         if (!res.ok) {
           throw new Error('Failed to load profile data');
@@ -91,7 +91,7 @@ export default function DashboardSettingsPage() {
       // Clean up empty strings to avoid sending them if not needed, 
       // although backend accepts them as long as they pass validation
       
-      const res = await authFetch(`${serverUrl}/api/users/me`, {
+      const res = await authFetch(`/api/backend/users/me`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

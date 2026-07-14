@@ -21,7 +21,7 @@ export default function AnalyticsPage() {
   const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await authFetch(`${serverUrl}/api/analytics/user`);
+      const res = await authFetch(`/api/backend/analytics/user`);
       if (res.ok) {
         const data = await res.json();
         setAnalytics(data);

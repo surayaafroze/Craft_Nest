@@ -21,7 +21,7 @@ export default function MyReviewsPage() {
   const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await authFetch(`${serverUrl}/api/reviews/me`);
+      const res = await authFetch(`/api/backend/reviews/me`);
       if (!res.ok) throw new Error("Failed to fetch reviews");
       const data = await res.json();
       setReviews(data.reviews || []);
@@ -42,7 +42,7 @@ export default function MyReviewsPage() {
     
     try {
       setDeletingId(id);
-      const res = await authFetch(`${serverUrl}/api/reviews/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/backend/reviews/${id}`, { method: "DELETE" });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to delete review");

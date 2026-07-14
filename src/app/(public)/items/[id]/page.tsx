@@ -42,7 +42,7 @@ export default function ItemDetailsPage() {
       setError(null);
 
       // Fetch Item Details
-      const itemRes = await authFetch(`${serverUrl}/api/items/${itemId}`);
+      const itemRes = await authFetch(`/api/backend/items/${itemId}`);
       if (!itemRes.ok) {
         if (itemRes.status === 404) throw new Error("Item not found");
         if (itemRes.status === 403) throw new Error("Access forbidden");
@@ -53,8 +53,8 @@ export default function ItemDetailsPage() {
 
       // Fetch Related Items and Reviews in parallel
       const [relatedRes, reviewsRes] = await Promise.all([
-        fetch(`${serverUrl}/api/items/related/${itemId}`),
-        fetch(`${serverUrl}/api/items/${itemId}/reviews`)
+        fetch(`/api/backend/items/related/${itemId}`),
+        fetch(`/api/backend/items/${itemId}/reviews`)
       ]);
 
       if (relatedRes.ok) {
@@ -68,7 +68,7 @@ export default function ItemDetailsPage() {
       
       // Fetch Wishlist status if logged in
       if (currentUser) {
-        const wishlistRes = await authFetch(`${serverUrl}/api/wishlist`);
+        const wishlistRes = await authFetch(`/api/backend/wishlist`);
         if (wishlistRes.ok) {
           const wishlistData = await wishlistRes.json();
           // The API likely returns { wishlist: { itemIds: string[] } }
@@ -96,7 +96,7 @@ export default function ItemDetailsPage() {
     try {
       setIsWishlistLoading(true);
       const method = isInWishlist ? "DELETE" : "POST";
-      const res = await authFetch(`${serverUrl}/api/wishlist/${itemId}`, { method });
+      const res = await authFetch(`/api/backend/wishlist/${itemId}`, { method });
       
       if (!res.ok) {
         const data = await res.json();
@@ -118,7 +118,7 @@ export default function ItemDetailsPage() {
     
     try {
       setIsDeletingItem(true);
-      const res = await authFetch(`${serverUrl}/api/items/${itemId}`, { method: "DELETE" });
+      const res = await authFetch(`/api/backend/items/${itemId}`, { method: "DELETE" });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to delete item");
@@ -132,7 +132,7 @@ export default function ItemDetailsPage() {
   };
 
   const handleAddReview = async (rating: number, comment: string) => {
-    const res = await authFetch(`${serverUrl}/api/items/${itemId}/reviews`, {
+    const res = await authFetch(`/api/backend/items/${itemId}/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ rating, comment }),
@@ -166,7 +166,7 @@ export default function ItemDetailsPage() {
   };
 
   const handleDeleteReview = async (reviewId: string) => {
-    const res = await authFetch(`${serverUrl}/api/reviews/${reviewId}`, { method: "DELETE" });
+    const res = await authFetch(`/api/backend/reviews/${reviewId}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json();
       toast.error(data.error || "Failed to delete review");

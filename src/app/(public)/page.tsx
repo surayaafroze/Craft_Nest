@@ -53,7 +53,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // 1. Fetch Trending Items (Exactly 8, sorted by newest)
-    fetch(`${serverUrl}/api/items?limit=8&sort=newest`)
+    fetch(`/api/backend/items?limit=8&sort=newest`)
       .then(res => res.json())
       .then(data => {
         setTrendingItems(data.items || []);
@@ -62,21 +62,21 @@ export default function HomePage() {
       .catch(() => setLoadingItems(false));
 
     // 2. Fetch Statistics
-    fetch(`${serverUrl}/api/home/statistics`)
+    fetch(`/api/backend/home/statistics`)
       .then(res => res.json())
       .then(data => {
         if(data.success) setStats(data.data);
       }).catch(console.error);
 
     // 3. Fetch Top Contributors
-    fetch(`${serverUrl}/api/home/top-contributors`)
+    fetch(`/api/backend/home/top-contributors`)
       .then(res => res.json())
       .then(data => {
         if(data.success) setContributors(data.data);
       }).catch(console.error);
 
     // 4. Fetch Blog Preview
-    fetch(`${serverUrl}/api/home/blog-preview`)
+    fetch(`/api/backend/home/blog-preview`)
       .then(res => res.json())
       .then(data => {
         if(data.success) setBlogPosts(data.data);
@@ -95,7 +95,7 @@ export default function HomePage() {
     
     setLoadingNewsletter(true);
     try {
-      const res = await fetch(`${serverUrl}/api/home/newsletter`, {
+      const res = await fetch(`/api/backend/home/newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })

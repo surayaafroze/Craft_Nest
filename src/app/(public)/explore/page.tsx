@@ -80,7 +80,7 @@ function ExploreContent() {
       if (!params.has("page")) params.append("page", page.toString());
       params.set("limit", "9");
 
-      const response = await fetch(`${serverUrl}/api/items?${params.toString()}`);
+      const response = await fetch(`/api/backend/items?${params.toString()}`);
       if (!response.ok) {
         throw new Error("Failed to fetch items.");
       }

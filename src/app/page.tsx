@@ -84,8 +84,8 @@ export default function HomePage() {
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
       try {
         const [contributorsRes, blogRes] = await Promise.all([
-          fetch(`${serverUrl}/api/home/top-contributors`),
-          fetch(`${serverUrl}/api/home/blog-preview`)
+          fetch(`/api/backend/home/top-contributors`),
+          fetch(`/api/backend/home/blog-preview`)
         ]);
         
         if (contributorsRes.ok) {
@@ -117,7 +117,7 @@ export default function HomePage() {
     
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
     try {
-      const res = await fetch(`${serverUrl}/api/home/newsletter`, {
+      const res = await fetch(`/api/backend/home/newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })

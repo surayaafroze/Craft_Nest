@@ -19,7 +19,7 @@ export function TrendingItems() {
       try {
         const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
         // Fetch top 8 highest rated items
-        const res = await fetch(`${serverUrl}/api/items?sortBy=avgRating&sortOrder=desc&limit=8`);
+        const res = await fetch(`/api/backend/items?sortBy=avgRating&sortOrder=desc&limit=8`);
         const data = await res.json();
         
         if (res.ok) {

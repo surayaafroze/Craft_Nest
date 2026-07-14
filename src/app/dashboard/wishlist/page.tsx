@@ -17,7 +17,7 @@ export default function WishlistPage() {
   const fetchWishlist = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await authFetch(`${serverUrl}/api/wishlist`);
+      const res = await authFetch(`/api/backend/wishlist`);
       if (res.ok) {
         const data = await res.json();
         setWishlistItems(data.wishlist?.items || []);

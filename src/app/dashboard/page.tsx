@@ -37,9 +37,9 @@ export default function DashboardOverviewPage() {
       setError(null);
 
       const [overviewRes, itemsRes, reviewsRes] = await Promise.all([
-        authFetch(`${serverUrl}/api/dashboard/overview`),
-        authFetch(`${serverUrl}/api/items/mine?limit=4`),
-        authFetch(`${serverUrl}/api/reviews/me`)
+        authFetch(`/api/backend/dashboard/overview`),
+        authFetch(`/api/backend/items/mine?limit=4`),
+        authFetch(`/api/backend/reviews/me`)
       ]);
 
       if (!overviewRes.ok) throw new Error("Failed to load dashboard overview");

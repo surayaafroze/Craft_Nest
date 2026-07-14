@@ -36,7 +36,7 @@ export default function AddItemPage() {
     // Fetch categories
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${serverUrl}/api/categories`);
+        const res = await fetch(`/api/backend/categories`);
         if (res.ok) {
           const data = await res.json();
           setCategories(data.data || []);
@@ -92,7 +92,7 @@ export default function AddItemPage() {
         images: imageUrl ? [imageUrl] : [],
       };
 
-      const res = await authFetch(`${serverUrl}/api/items`, {
+      const res = await authFetch(`/api/backend/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(itemData),

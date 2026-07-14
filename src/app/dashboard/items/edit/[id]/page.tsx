@@ -44,8 +44,8 @@ export default function EditItemPage() {
       try {
         setFetching(true);
         const [catRes, itemRes] = await Promise.all([
-          fetch(`${serverUrl}/api/categories`),
-          authFetch(`${serverUrl}/api/items/${itemId}`)
+          fetch(`/api/backend/categories`),
+          authFetch(`/api/backend/items/${itemId}`)
         ]);
 
         if (catRes.ok) {
@@ -131,7 +131,7 @@ export default function EditItemPage() {
         images: replaceImage && !imageFile ? [] : (imageUrl ? [imageUrl] : []),
       };
 
-      const res = await authFetch(`${serverUrl}/api/items/${itemId}`, {
+      const res = await authFetch(`/api/backend/items/${itemId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(itemData),

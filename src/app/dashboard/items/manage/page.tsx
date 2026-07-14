@@ -26,7 +26,7 @@ export default function ManageItemsPage() {
   const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await authFetch(`${serverUrl}/api/items/mine?page=${page}&limit=10`);
+      const res = await authFetch(`/api/backend/items/mine?page=${page}&limit=10`);
       if (!res.ok) throw new Error("Failed to fetch items");
       const data = await res.json();
       setItems(data.items || []);
@@ -48,7 +48,7 @@ export default function ManageItemsPage() {
     
     try {
       setDeletingId(id);
-      const res = await authFetch(`${serverUrl}/api/items/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/backend/items/${id}`, { method: "DELETE" });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to delete item");

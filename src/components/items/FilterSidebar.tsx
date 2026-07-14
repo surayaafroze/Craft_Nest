@@ -34,7 +34,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
     const fetchCategories = async () => {
       try {
         const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
-        const res = await fetch(`${serverUrl}/api/categories`);
+        const res = await fetch(`/api/backend/categories`);
         const data = await res.json();
         if (data.success) {
           const formattedCategories = data.data.map((c: any) => ({
