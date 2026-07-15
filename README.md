@@ -18,7 +18,6 @@ CraftNest is a beautifully designed, modern web application that allows users to
 
 ## 🚀 Live Demo
 - **Frontend Live Demo:** [https://craft-nest-beta.vercel.app/](https://craft-nest-beta.vercel.app/)
-- **Repository:** [https://github.com/surayaafroze/Craft_Nest](https://github.com/surayaafroze/Craft_Nest)
 
 ## ✨ Features
 CraftNest comes packed with the following features (implemented and planned):
@@ -83,7 +82,7 @@ To run this project locally:
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/surayaafroze/Craft_Nest.git
    cd craft_nest
    ```
 
