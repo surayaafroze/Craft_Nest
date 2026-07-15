@@ -15,6 +15,7 @@ interface Filters {
 
 interface FilterDrawerProps {
   filters: Filters;
+  onFilterChange: (filters: Filters) => void;
   onApply: () => void;
   onClear?: () => void;
   onCategoryChange?: (category: string) => void;
