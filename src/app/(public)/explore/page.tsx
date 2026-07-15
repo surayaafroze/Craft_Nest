@@ -106,6 +106,17 @@ function ExploreContent() {
     });
   }, [updateURL, localFilters]);
 
+  const handleClearFilters = useCallback(() => {
+    updateURL({
+      category: "",
+      minPrice: "",
+      maxPrice: "",
+      rating: "",
+      location: "",
+      page: "1"
+    });
+  }, [updateURL]);
+
   const handleSearch = useCallback((newSearch: string) => {
     updateURL({ search: newSearch, page: "1" });
   }, [updateURL]);
@@ -144,6 +155,7 @@ function ExploreContent() {
                 filters={localFilters}
                 onFilterChange={setLocalFilters}
                 onApply={handleApplyFilters}
+                onClear={handleClearFilters}
                 onCategoryChange={(cat) => updateURL({ ...localFilters, category: cat, page: "1" })}
               />
             </div>
@@ -157,6 +169,7 @@ function ExploreContent() {
                   filters={localFilters}
                   onFilterChange={setLocalFilters}
                   onApply={handleApplyFilters}
+                  onClear={handleClearFilters}
                   onCategoryChange={(cat) => updateURL({ ...localFilters, category: cat, page: "1" })}
                 />
                 <p className="text-zinc-600 dark:text-zinc-400 font-medium">

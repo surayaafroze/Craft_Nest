@@ -15,8 +15,8 @@ interface Filters {
 
 interface FilterDrawerProps {
   filters: Filters;
-  onFilterChange: (filters: Filters) => void;
   onApply: () => void;
+  onClear?: () => void;
   onCategoryChange?: (category: string) => void;
 }
 
@@ -24,6 +24,7 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({
   filters,
   onFilterChange,
   onApply,
+  onClear,
   onCategoryChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +32,11 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({
   const handleApply = () => {
     setIsOpen(false);
     onApply();
+  };
+
+  const handleClear = () => {
+    setIsOpen(false);
+    if (onClear) onClear();
   };
 
   return (
@@ -71,6 +77,7 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({
                 filters={filters}
                 onFilterChange={onFilterChange}
                 onApply={handleApply}
+                onClear={handleClear}
                 onCategoryChange={(cat) => {
                   setIsOpen(false);
                   if (onCategoryChange) {

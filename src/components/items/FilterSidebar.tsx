@@ -15,8 +15,8 @@ interface Filters {
 
 interface FilterSidebarProps {
   filters: Filters;
-  onFilterChange: (filters: Filters) => void;
   onApply: () => void;
+  onClear?: () => void;
   onCategoryChange?: (category: string) => void;
 }
 
@@ -24,6 +24,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   filters,
   onFilterChange,
   onApply,
+  onClear,
   onCategoryChange,
 }) => {
   const [categories, setCategories] = useState<{ value: string; label: string }[]>([
@@ -126,9 +127,16 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         />
       </div>
 
-      <Button onClick={onApply} className="w-full rounded-xl">
-        Apply Filters
-      </Button>
+      <div className="flex gap-3">
+        <Button onClick={onApply} className="flex-1 rounded-xl">
+          Apply Filters
+        </Button>
+        {onClear && (
+          <Button variant="outline" onClick={onClear} className="flex-1 rounded-xl">
+            Clear
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
