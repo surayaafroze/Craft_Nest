@@ -1,4 +1,7 @@
 <div align="center">
+  <a href="https://craft-nest-beta.vercel.app/">
+    <img src="https://i.ibb.co/JwrWb3bS/Gemini-Generated-Image-dx0d24dx0d24dx0d.png" alt="CraftNest Banner" style="width:100%; border-radius:12px; margin-bottom:1rem;" />
+  </a>
   <h1>✨ CraftNest ✨</h1>
   <p><strong>A premium portfolio and marketplace platform for makers and artisans to showcase their crafts.</strong></p>
   
@@ -14,8 +17,8 @@
 CraftNest is a beautifully designed, modern web application that allows users to discover, showcase, and review artisan crafts. With its responsive UI, fluid animations powered by Framer Motion, and robust authentication flow, CraftNest provides an elegant and seamless user experience for both creators and enthusiasts.
 
 ## 🚀 Live Demo
-- **Frontend:** [Placeholder Link]
-- **Backend:** [Placeholder Link]
+- **Frontend Live Demo:** [https://craft-nest-beta.vercel.app/](https://craft-nest-beta.vercel.app/)
+- **Repository:** [https://github.com/surayaafroze/Craft_Nest](https://github.com/surayaafroze/Craft_Nest)
 
 ## ✨ Features
 CraftNest comes packed with the following features (implemented and planned):
@@ -106,13 +109,6 @@ NEXT_PUBLIC_API_BASE_URL=
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 NEXT_PUBLIC_IMGBB_API_KEY=
 ```
-
-## 📸 Project Screenshots
-*(Placeholder for project screenshots)*
-
-- **Home Page:** [Placeholder]
-- **Explore Page:** [Placeholder]
-- **User Dashboard:** [Placeholder]
 
 ## 🔮 Future Improvements
 - Enhanced public user profiles.
