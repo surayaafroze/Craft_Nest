@@ -6,13 +6,13 @@ import { useTheme } from "next-themes";
 import { Button } from "./Button";
 
 export function ThemeToggle({ isTransparent, className }: { isTransparent?: boolean; className?: string }) {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
       className={`rounded-full ${
         isTransparent 
           ? "text-zinc-700 hover:bg-zinc-100/50 dark:text-zinc-300 dark:hover:bg-zinc-800/50 hover:text-emerald-600 dark:hover:text-emerald-400" 
