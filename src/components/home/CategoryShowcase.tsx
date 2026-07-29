@@ -26,7 +26,7 @@ export function CategoryShowcase() {
           setCategories(data.data);
         }
       } catch (err) {
-        console.error("Failed to fetch categories", err);
+        console.error(" Failed to fetch categories", err);
       } finally {
         setLoading(false);
       }
