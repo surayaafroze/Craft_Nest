@@ -57,7 +57,14 @@ export default function ManageUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">Manage Users</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">Manage Users</h2>
+          {totalItems > 0 && (
+            <span className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+              {totalItems} {totalItems === 1 ? 'user' : 'users'}
+            </span>
+          )}
+        </div>
         <p className="text-muted-foreground mt-1">View and manage all registered users.</p>
       </div>
 
