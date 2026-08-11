@@ -78,7 +78,7 @@ function ExploreContent() {
       if (!params.has("sortBy")) params.append("sortBy", sortOption.sortBy);
       if (!params.has("sortOrder")) params.append("sortOrder", sortOption.sortOrder);
       if (!params.has("page")) params.append("page", page.toString());
-      params.set("limit", "9");
+      if (!params.has("limit")) params.set("limit", "9");
 
       const response = await fetch(`/api/backend/items?${params.toString()}`);
       if (!response.ok) {
@@ -236,7 +236,10 @@ function ExploreContent() {
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={parseInt(searchParams.get("limit") || "9", 10)}
                 onPageChange={(p) => updateURL({ page: p.toString() })}
+                onItemsPerPageChange={(limit) => updateURL({ limit: limit.toString(), page: "1" })}
               />
             )}
           </div>
