@@ -75,7 +75,14 @@ export default function ManageItemsPage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white font-heading tracking-tight">Manage Items</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white font-heading tracking-tight">Manage Items</h1>
+            {totalItems > 0 && (
+              <span className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                {totalItems} {totalItems === 1 ? 'item' : 'items'}
+              </span>
+            )}
+          </div>
           <p className="text-zinc-500 mt-1">View, edit, or remove your listed items.</p>
         </div>
         <Link href="/dashboard/items/add">
