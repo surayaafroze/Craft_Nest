@@ -9,19 +9,26 @@ import { Users, Shield, Check, X, ShieldAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { motion } from 'framer-motion';
 
+import { Pagination } from '@/components/ui/Pagination';
+
 export default function ManageUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers(page);
+  }, [page]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (pageNum = 1) => {
     try {
       setLoading(true);
-      const data = await getAdminUsers();
-      setUsers(data.users);
+      const data = await getAdminUsers(pageNum, 10);
+      setUsers(data.users || []);
+      setTotalPages(data.pagination?.totalPages || 1);
+      setTotalItems(data.pagination?.total || 0);
     } catch (error) {
       toast.error(handleApiError(error));
     } finally {
@@ -147,6 +154,18 @@ export default function ManageUsersPage() {
             </tbody>
           </table>
         </div>
+        
+        {!loading && (
+          <div className="px-4 py-2 border-t border-zinc-200 dark:border-zinc-800">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={10}
+              onPageChange={setPage}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

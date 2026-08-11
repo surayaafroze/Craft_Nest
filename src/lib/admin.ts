@@ -1,7 +1,7 @@
 import { apiClient } from './api';
 
-export const getAdminUsers = async () => {
-  const response = await apiClient.get('/users');
+export const getAdminUsers = async (page = 1, limit = 10) => {
+  const response = await apiClient.get(`/users?page=${page}&limit=${limit}`);
   return response.data;
 };
 

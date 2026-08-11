@@ -23,6 +23,8 @@ export default function ManageItemsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  const [totalItems, setTotalItems] = useState(0);
+
   const fetchItems = useCallback(async () => {
     const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('auth_token');
     if (!session && !hasToken) {
@@ -37,6 +39,7 @@ export default function ManageItemsPage() {
       const data = await res.json();
       setItems(data.items || []);
       setTotalPages(data.pagination?.totalPages || 1);
+      setTotalItems(data.pagination?.total || 0);
     } catch (err: any) {
       toast.error(err.message || "Failed to load items");
     } finally {
@@ -180,9 +183,15 @@ export default function ManageItemsPage() {
           </table>
         </div>
         
-        {!loading && totalPages > 1 && (
-          <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex justify-center">
-            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        {!loading && (
+          <div className="px-4 py-2 border-t border-zinc-200 dark:border-zinc-800">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={10}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </div>

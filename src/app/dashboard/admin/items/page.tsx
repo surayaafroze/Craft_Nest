@@ -10,20 +10,27 @@ import { Badge } from '@/components/ui/Badge';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
+import { Pagination } from '@/components/ui/Pagination';
+
 export default function ModerateItemsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    fetchItems(filter);
-  }, [filter]);
+    fetchItems(filter, page);
+  }, [filter, page]);
 
-  const fetchItems = async (status: string) => {
+  const fetchItems = async (status: string, pageNum = 1) => {
     try {
       setLoading(true);
-      const response = await apiClient.get(`/items?status=${status}&limit=50`);
-      setItems(response.data.items);
+      const response = await apiClient.get(`/items?status=${status}&page=${pageNum}&limit=9`);
+      setItems(response.data.items || []);
+      setTotalPages(response.data.pagination?.totalPages || 1);
+      setTotalItems(response.data.pagination?.total || 0);
     } catch (error) {
       toast.error(handleApiError(error));
     } finally {
@@ -167,6 +174,14 @@ export default function ModerateItemsPage() {
             There are no {filter} items in the moderation queue at the moment.
           </p>
         </div>
+      {!loading && items.length > 0 && (
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={9}
+          onPageChange={setPage}
+        />
       )}
     </div>
   );
