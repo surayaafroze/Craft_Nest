@@ -52,7 +52,14 @@ export default function ModerateItemsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">Moderate Items</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">Moderate Items</h2>
+            {totalItems > 0 && (
+              <span className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                {totalItems} {totalItems === 1 ? 'item' : 'items'}
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground mt-1">Review and approve or reject user submissions.</p>
         </div>
         <div className="flex bg-zinc-100 dark:bg-zinc-900 p-1 rounded-lg w-fit">
