@@ -174,6 +174,8 @@ export default function ModerateItemsPage() {
             There are no {filter} items in the moderation queue at the moment.
           </p>
         </div>
+      )}
+
       {!loading && items.length > 0 && (
         <Pagination
           currentPage={page}
