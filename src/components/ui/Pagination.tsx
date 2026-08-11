@@ -143,9 +143,9 @@ export function Pagination({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onPageChange(pageNum as number)}
-                  className={`h-9 min-w-9 px-3 rounded-xl text-xs font-semibold transition-all ${
+                  className={`h-9 min-w-9 px-3 rounded-xl text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${
                     isCurrent
-                      ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20 dark:bg-emerald-500'
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/20 dark:from-emerald-500 dark:to-teal-500'
                       : 'bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                   }`}
                 >
