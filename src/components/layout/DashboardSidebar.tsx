@@ -17,7 +17,7 @@ import {
   TrendingUp,
   LogOut
 } from 'lucide-react';
-import { useSession, authClient } from '@/app/lib/auth-client';
+import { useSession, signOut } from '@/app/lib/auth-client';
 import toast from 'react-hot-toast';
 
 export function DashboardSidebar() {
@@ -44,9 +44,14 @@ export function DashboardSidebar() {
 
   const handleSignOut = async () => {
     try {
-      await authClient.signOut();
       toast.success("Signed out successfully");
-      router.push('/login');
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            window.location.href = '/login';
+          }
+        }
+      });
     } catch (err) {
       toast.error("Failed to sign out");
     }

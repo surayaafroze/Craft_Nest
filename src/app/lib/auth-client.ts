@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { jwtClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+import { apiClient } from "@/lib/api";
 
 export const authClient = createAuthClient({
     baseURL: typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000"),
@@ -15,6 +16,9 @@ export const signOut = async (options?: any) => {
     localStorage.removeItem('user_info');
   }
   try {
+    await apiClient.post("/auth/logout");
+  } catch (e) {}
+  try {
     await authClient.signOut();
   } catch (e) {
     // Ignore better-auth logout errors
@@ -22,7 +26,7 @@ export const signOut = async (options?: any) => {
   if (options?.fetchOptions?.onSuccess) {
     options.fetchOptions.onSuccess();
   } else if (typeof window !== 'undefined') {
-    window.location.href = "/";
+    window.location.href = "/login";
   }
 };
 
