@@ -32,6 +32,12 @@ export default function DashboardOverviewPage() {
   const [recentReviews, setRecentReviews] = useState<any[]>([]);
 
   const fetchDashboardData = useCallback(async () => {
+    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('auth_token');
+    if (!session && !hasToken) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -61,7 +67,7 @@ export default function DashboardOverviewPage() {
     } finally {
       setLoading(false);
     }
-  }, [serverUrl]);
+  }, [session, serverUrl]);
 
   useEffect(() => {
     fetchDashboardData();

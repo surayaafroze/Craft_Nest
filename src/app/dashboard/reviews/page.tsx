@@ -19,6 +19,12 @@ export default function MyReviewsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchReviews = useCallback(async () => {
+    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('auth_token');
+    if (!session && !hasToken) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await authFetch(`/api/backend/reviews/me`);
@@ -30,7 +36,7 @@ export default function MyReviewsPage() {
     } finally {
       setLoading(false);
     }
-  }, [serverUrl]);
+  }, [session, serverUrl]);
 
   useEffect(() => {
     fetchReviews();

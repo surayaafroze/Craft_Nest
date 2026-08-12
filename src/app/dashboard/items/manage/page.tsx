@@ -24,6 +24,12 @@ export default function ManageItemsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchItems = useCallback(async () => {
+    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('auth_token');
+    if (!session && !hasToken) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await authFetch(`/api/backend/items/mine?page=${page}&limit=10`);
@@ -36,7 +42,7 @@ export default function ManageItemsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, serverUrl]);
+  }, [session, page, serverUrl]);
 
   useEffect(() => {
     fetchItems();
