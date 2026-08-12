@@ -48,12 +48,14 @@ export function DashboardSidebar() {
       await signOut({
         fetchOptions: {
           onSuccess: () => {
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         }
       });
     } catch (err) {
-      toast.error("Failed to sign out");
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
     }
   };
 

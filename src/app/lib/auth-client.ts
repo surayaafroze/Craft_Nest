@@ -15,18 +15,19 @@ export const signOut = async (options?: any) => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_info');
   }
-  try {
-    await apiClient.post("/auth/logout");
-  } catch (e) {}
-  try {
-    await authClient.signOut();
-  } catch (e) {
-    // Ignore better-auth logout errors
-  }
+  
+  // Fire backend and Better Auth logouts asynchronously without blocking the UI redirect
+  apiClient.post("/auth/logout").catch(() => {});
+  authClient.signOut().catch(() => {});
+
   if (options?.fetchOptions?.onSuccess) {
-    options.fetchOptions.onSuccess();
-  } else if (typeof window !== 'undefined') {
-    window.location.href = "/login";
+    try {
+      options.fetchOptions.onSuccess();
+    } catch (e) {}
+  }
+
+  if (typeof window !== 'undefined') {
+    window.location.href = "/";
   }
 };
 
