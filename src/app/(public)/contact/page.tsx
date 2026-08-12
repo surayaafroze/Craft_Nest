@@ -9,9 +9,21 @@ import { Send, MapPin, Mail, Phone } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function ContactPage() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Thanks for reaching out! We'll get back to you soon.");
+    const form = e.currentTarget;
+    setSubmitting(true);
+    
+    try {
+      toast.success("Thanks for reaching out! We'll get back to you soon.");
+      form.reset();
+    } catch {
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
