@@ -12,7 +12,10 @@ export function NewsletterSection() {
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !email.includes('@')) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
     setLoading(true);
     try {
