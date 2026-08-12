@@ -44,6 +44,9 @@ export default function RegisterPage() {
         const backendRes = await apiClient.post("/auth/register", { name, email, password });
         if (backendRes.data?.token) {
           localStorage.setItem('auth_token', backendRes.data.token);
+          if (backendRes.data?.user) {
+            localStorage.setItem('user_info', JSON.stringify(backendRes.data.user));
+          }
           backendSuccess = true;
         }
       } catch (backendErr: any) {
@@ -62,7 +65,7 @@ export default function RegisterPage() {
         showToast(authError.message || "Registration failed", "error");
       } else {
         showToast("Account created successfully!", "success");
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (err: any) {
       setError(err?.message || "An unexpected error occurred.");

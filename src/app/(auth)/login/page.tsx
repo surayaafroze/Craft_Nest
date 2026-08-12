@@ -35,6 +35,9 @@ export default function LoginPage() {
         const backendRes = await apiClient.post("/auth/login", { email, password });
         if (backendRes.data?.token) {
           localStorage.setItem('auth_token', backendRes.data.token);
+          if (backendRes.data?.user) {
+            localStorage.setItem('user_info', JSON.stringify(backendRes.data.user));
+          }
           backendSuccess = true;
         }
       } catch (backendErr: any) {
@@ -53,7 +56,7 @@ export default function LoginPage() {
         showToast(authError.message || "Sign in failed", "error");
       } else {
         showToast("Signed in successfully!", "success");
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (err: any) {
       setError(err?.message || "An unexpected error occurred.");
@@ -89,6 +92,9 @@ export default function LoginPage() {
         const backendRes = await apiClient.post("/auth/login", { email: demoEmail, password: demoPassword });
         if (backendRes.data?.token) {
           localStorage.setItem('auth_token', backendRes.data.token);
+          if (backendRes.data?.user) {
+            localStorage.setItem('user_info', JSON.stringify(backendRes.data.user));
+          }
           backendSuccess = true;
         }
       } catch (backendErr: any) {
@@ -106,7 +112,7 @@ export default function LoginPage() {
         showToast(authError.message || "Demo login failed", "error");
       } else {
         showToast(`Signed in as Demo ${role === "admin" ? "Admin" : "User"}`, "success");
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (err: any) {
       setError(err?.message || "An error occurred");
