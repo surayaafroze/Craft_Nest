@@ -83,9 +83,9 @@ export function DashboardSidebar() {
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute inset-0 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800/50"
+                    className="absolute inset-0 rounded-xl bg-emerald-100/90 dark:bg-emerald-950/50 border border-emerald-300/60 dark:border-emerald-800/80 shadow-sm"
                     initial={false}
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 28 }}
                   />
                 )}
                 <Icon className="h-5 w-5 relative z-10" />
