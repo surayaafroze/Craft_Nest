@@ -10,12 +10,25 @@ export const apiClient = axios.create({
   },
 });
 
+// Interceptor to attach Authorization Bearer token from localStorage
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('auth_token');
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
 // Interceptor to handle unauthorized errors globally
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // You can trigger a global logout event or redirect to login
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token');
+      }
       console.warn('Unauthorized access - potentially expired session');
     }
     return Promise.reject(error);

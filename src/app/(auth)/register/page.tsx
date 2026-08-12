@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/app/lib/auth-client";
+import { apiClient } from "@/lib/api";
 import { useToast } from "@/providers/toast-provider";
 import { GuestGuard } from "@/components/auth/Guards";
 import FormInput from "@/components/ui/FormInput";
@@ -38,6 +39,17 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      let backendSuccess = false;
+      try {
+        const backendRes = await apiClient.post("/auth/register", { name, email, password });
+        if (backendRes.data?.token) {
+          localStorage.setItem('auth_token', backendRes.data.token);
+          backendSuccess = true;
+        }
+      } catch (backendErr: any) {
+        console.warn("Direct backend registration warning:", backendErr?.response?.data?.error || backendErr?.message);
+      }
+
       const { error: authError } = await authClient.signUp.email({
         email,
         password,
@@ -45,7 +57,7 @@ export default function RegisterPage() {
         callbackURL: "/dashboard",
       });
 
-      if (authError) {
+      if (authError && !backendSuccess) {
         setError(authError.message || "Failed to create account. Please try again.");
         showToast(authError.message || "Registration failed", "error");
       } else {

@@ -16,12 +16,15 @@ export function AuthSync() {
       // Sync if we haven't synced yet, or if the session ID changed (e.g. switched users)
       if (!hasSynced.current || lastSessionId.current !== session.session.id) {
         apiClient.post("/auth/sync")
-          .then(() => {
+          .then((res) => {
             hasSynced.current = true;
             lastSessionId.current = session.session.id;
+            if (res.data?.token) {
+              localStorage.setItem('auth_token', res.data.token);
+            }
           })
-          .catch((err) => {
-            console.error("Failed to sync auth session with backend:", err);
+          .catch(() => {
+            // Silently swallow session sync failures if session token sync is unavailable
           });
       }
     } else {
@@ -31,9 +34,11 @@ export function AuthSync() {
           .then(() => {
             hasSynced.current = false;
             lastSessionId.current = null;
+            localStorage.removeItem('auth_token');
           })
           .catch((err) => {
             console.error("Failed to clear backend auth session:", err);
+            localStorage.removeItem('auth_token');
           });
       }
     }

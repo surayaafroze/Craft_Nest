@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/app/lib/auth-client";
+import { apiClient } from "@/lib/api";
 import { useToast } from "@/providers/toast-provider";
 import { GuestGuard } from "@/components/auth/Guards";
 import FormInput from "@/components/ui/FormInput";
@@ -28,13 +29,26 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // 1. Authenticate with Express Backend
+      let backendSuccess = false;
+      try {
+        const backendRes = await apiClient.post("/auth/login", { email, password });
+        if (backendRes.data?.token) {
+          localStorage.setItem('auth_token', backendRes.data.token);
+          backendSuccess = true;
+        }
+      } catch (backendErr: any) {
+        console.warn("Direct backend login warning:", backendErr?.response?.data?.error || backendErr?.message);
+      }
+
+      // 2. Authenticate with Better Auth client
       const { error: authError } = await authClient.signIn.email({
         email,
         password,
         callbackURL: "/dashboard",
       });
 
-      if (authError) {
+      if (authError && !backendSuccess) {
         setError(authError.message || "Failed to sign in. Please check your credentials.");
         showToast(authError.message || "Sign in failed", "error");
       } else {
@@ -70,13 +84,24 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      let backendSuccess = false;
+      try {
+        const backendRes = await apiClient.post("/auth/login", { email: demoEmail, password: demoPassword });
+        if (backendRes.data?.token) {
+          localStorage.setItem('auth_token', backendRes.data.token);
+          backendSuccess = true;
+        }
+      } catch (backendErr: any) {
+        console.warn("Direct backend demo login warning:", backendErr?.response?.data?.error || backendErr?.message);
+      }
+
       const { error: authError } = await authClient.signIn.email({
         email: demoEmail,
         password: demoPassword,
         callbackURL: "/dashboard",
       });
 
-      if (authError) {
+      if (authError && !backendSuccess) {
         setError(authError.message || "Demo login failed");
         showToast(authError.message || "Demo login failed", "error");
       } else {

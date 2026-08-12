@@ -9,10 +9,19 @@ export const authClient = createAuthClient({
 export const { signIn, signUp, signOut, useSession } = authClient;
 
 // ─── Authenticated fetch helper ───────────────────────────────────────────────
-// Uses HTTP-only cookies securely synced via backend_jwt.
+// Uses HTTP-only cookies securely synced via backend_jwt and Authorization Bearer header fallback.
 export const authFetch = async (url: string | URL, options: RequestInit = {}): Promise<Response> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+  const headers = new Headers(options.headers || {});
+  
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
   return fetch(url, {
     credentials: 'include',
     ...options,
+    headers,
   });
 };
+

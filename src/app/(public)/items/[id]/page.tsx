@@ -42,7 +42,7 @@ export default function ItemDetailsPage() {
       setError(null);
 
       // Fetch Item Details
-      const itemRes = await authFetch(`/api/backend/items/${itemId}`);
+      const itemRes = await fetch(`/api/backend/items/${itemId}`);
       if (!itemRes.ok) {
         if (itemRes.status === 404) throw new Error("Item not found");
         if (itemRes.status === 403) throw new Error("Access forbidden");
@@ -68,14 +68,17 @@ export default function ItemDetailsPage() {
       
       // Fetch Wishlist status if logged in
       if (currentUser) {
-        const wishlistRes = await authFetch(`/api/backend/wishlist`);
-        if (wishlistRes.ok) {
-          const wishlistData = await wishlistRes.json();
-          // The API likely returns { wishlist: { itemIds: string[] } }
-          const itemIds = wishlistData.wishlist?.itemIds || [];
-          if (itemIds.includes(itemId)) {
-            setIsInWishlist(true);
+        try {
+          const wishlistRes = await authFetch(`/api/backend/wishlist`);
+          if (wishlistRes.ok) {
+            const wishlistData = await wishlistRes.json();
+            const itemIds = wishlistData.wishlist?.itemIds || [];
+            if (itemIds.includes(itemId)) {
+              setIsInWishlist(true);
+            }
           }
+        } catch (e) {
+          // Ignore wishlist check error when unauthenticated or token expired
         }
       }
 
