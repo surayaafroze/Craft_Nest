@@ -33,21 +33,23 @@ export const signOut = async (options?: any) => {
 
 export function useSession() {
   const baSession = authClient.useSession();
-  const [localUser, setLocalUser] = useState<any>(() => {
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem('user_info');
-      if (cached) {
-        try {
-          return JSON.parse(cached);
-        } catch (e) {}
-      }
-    }
-    return null;
-  });
+  const [localUser, setLocalUser] = useState<any>(null);
   const [isChecking, setIsChecking] = useState<boolean>(true);
 
   useEffect(() => {
     let isMounted = true;
+
+    // Read cached user info after hydration completes
+    const cached = typeof window !== 'undefined' ? localStorage.getItem('user_info') : null;
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed && isMounted) {
+          setLocalUser(parsed);
+        }
+      } catch (e) {}
+    }
+
     const fetchMe = async () => {
       const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
       if (token) {

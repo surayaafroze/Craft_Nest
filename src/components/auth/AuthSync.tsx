@@ -12,6 +12,12 @@ export function AuthSync() {
   useEffect(() => {
     if (isPending) return;
 
+    // Skip network sync if auth_token already exists in localStorage
+    if (typeof window !== 'undefined' && localStorage.getItem('auth_token')) {
+      hasSynced.current = true;
+      return;
+    }
+
     if (session) {
       // Sync if we haven't synced yet, or if the session ID changed (e.g. switched users)
       if (!hasSynced.current || lastSessionId.current !== session.session.id) {
@@ -24,7 +30,7 @@ export function AuthSync() {
             }
           })
           .catch(() => {
-            // Silently swallow session sync failures if session token sync is unavailable
+            // Silently swallow session sync failures
           });
       }
     } else {
