@@ -13,6 +13,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({ initialSearch = "", onSear
   const lastSearchedTerm = useRef(initialSearch);
 
   useEffect(() => {
+    setSearchTerm(initialSearch);
+    lastSearchedTerm.current = initialSearch;
+  }, [initialSearch]);
+
+  useEffect(() => {
     const handler = setTimeout(() => {
       if (searchTerm !== lastSearchedTerm.current) {
         lastSearchedTerm.current = searchTerm;

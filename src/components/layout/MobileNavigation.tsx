@@ -20,7 +20,7 @@ export function MobileNavigation({ isTransparent, session, onLogout }: MobileNav
         variant="ghost" 
         size="icon" 
         onClick={() => setIsOpen(true)}
-        className={isTransparent ? 'text-white hover:bg-white/20' : ''}
+        className={isTransparent ? 'text-zinc-950 dark:text-white hover:bg-zinc-100 dark:hover:bg-white/20' : ''}
       >
         <Menu className="h-6 w-6" />
         <span className="sr-only">Toggle Menu</span>
