@@ -53,6 +53,13 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   }, []);
 
   const handleChange = (field: keyof Filters, value: string) => {
+    if ((field === "minPrice" || field === "maxPrice") && value !== "") {
+      const num = Number(value);
+      if (isNaN(num) || num < 0) {
+        onFilterChange({ ...filters, [field]: "" });
+        return;
+      }
+    }
     onFilterChange({ ...filters, [field]: value });
   };
 
