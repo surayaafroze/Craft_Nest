@@ -14,7 +14,9 @@ interface ItemCardProps {
 }
 
 export const ItemCard: React.FC<ItemCardProps> = ({ item, priority = false }) => {
-  const imageUrl = item.images?.[0] || "/placeholder.svg";
+  const imageUrl = (item.images && item.images.length > 0 && item.images[0].trim() !== "") 
+    ? item.images[0] 
+    : "/placeholder.svg";
   const { data: session } = useSession();
   
   const isOwner = session?.user?.id === item.ownerId;
