@@ -104,6 +104,7 @@ export function Pagination({
             onClick={() => onPageChange(1)}
             disabled={currentPage <= 1}
             title="First Page"
+            aria-label="Go to first page"
             className="h-9 w-9 rounded-xl border-zinc-200 dark:border-zinc-800 disabled:opacity-40"
           >
             <ChevronsLeft className="h-4 w-4" />
@@ -116,6 +117,7 @@ export function Pagination({
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage <= 1}
             title="Previous Page"
+            aria-label="Go to previous page"
             className="h-9 w-9 rounded-xl border-zinc-200 dark:border-zinc-800 disabled:opacity-40"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -143,6 +145,8 @@ export function Pagination({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onPageChange(pageNum as number)}
+                  aria-label={`Page ${pageNum}`}
+                  aria-current={isCurrent ? "page" : undefined}
                   className={`h-9 min-w-9 px-3 rounded-xl text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${
                     isCurrent
                       ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/20 dark:from-emerald-500 dark:to-teal-500'
@@ -162,6 +166,7 @@ export function Pagination({
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
             title="Next Page"
+            aria-label="Go to next page"
             className="h-9 w-9 rounded-xl border-zinc-200 dark:border-zinc-800 disabled:opacity-40"
           >
             <ChevronRight className="h-4 w-4" />
@@ -174,6 +179,7 @@ export function Pagination({
             onClick={() => onPageChange(totalPages)}
             disabled={currentPage >= totalPages}
             title="Last Page"
+            aria-label="Go to last page"
             className="h-9 w-9 rounded-xl border-zinc-200 dark:border-zinc-800 disabled:opacity-40"
           >
             <ChevronsRight className="h-4 w-4" />
