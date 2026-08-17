@@ -167,7 +167,7 @@ export default function ManageItemsPage() {
                           size="icon" 
                           title="Edit Item" 
                           className="rounded-lg text-zinc-500 hover:text-emerald-600"
-                          onClick={() => alert("Edit item feature coming soon")}
+                          onClick={() => toast("Edit item feature coming soon", { icon: "ℹ️" })}
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
