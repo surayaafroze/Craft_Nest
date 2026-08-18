@@ -127,4 +127,8 @@ export const authFetch = async (url: string | URL, options: RequestInit = {}): P
   });
 };
 
-
+export const hasValidAuthToken = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const token = localStorage.getItem('auth_token');
+  return !!token && token.trim().length > 0;
+};
