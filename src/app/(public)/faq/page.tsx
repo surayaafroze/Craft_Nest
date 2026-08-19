@@ -56,6 +56,20 @@ export default function FAQPage() {
           >
             Everything you need to know about using CraftNest.
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="max-w-md mx-auto"
+          >
+            <input
+              type="text"
+              placeholder="Search questions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white placeholder-zinc-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+            />
+          </motion.div>
         </div>
 
         <motion.div 
@@ -64,7 +78,10 @@ export default function FAQPage() {
           transition={{ delay: 0.2 }}
           className="space-y-4"
         >
-          {FAQS.map((faq, index) => (
+          {filteredFaqs.length === 0 ? (
+            <div className="text-center py-8 text-zinc-500">No matching questions found.</div>
+          ) : (
+            filteredFaqs.map((faq, index) => (
             <div 
               key={index} 
               className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm"
@@ -92,7 +109,8 @@ export default function FAQPage() {
                 )}
               </AnimatePresence>
             </div>
-          ))}
+          )))
+          }
         </motion.div>
       </div>
     </div>
