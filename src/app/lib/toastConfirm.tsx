@@ -8,7 +8,7 @@ export const confirmDeleteToast = (message: string): Promise<boolean> => {
         <p className="font-semibold text-zinc-900 dark:text-white">{message}</p>
         <div className="flex justify-end gap-2 mt-2">
           <button
-            className="px-3 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700"
+            className="px-3.5 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all border border-zinc-200 dark:border-zinc-700 active:scale-95"
             onClick={() => {
               toast.dismiss(t.id);
               resolve(false);
@@ -17,7 +17,7 @@ export const confirmDeleteToast = (message: string): Promise<boolean> => {
             Cancel
           </button>
           <button
-            className="px-3 py-1.5 text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-colors"
+            className="px-3.5 py-1.5 text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-lg transition-all shadow-sm"
             onClick={() => {
               toast.dismiss(t.id);
               resolve(true);
