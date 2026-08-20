@@ -58,7 +58,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, priority = false }) =>
       </div>
       <div className="p-5 flex flex-col flex-grow">
         <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-1 line-clamp-1 font-heading tracking-tight">
-          {item.title}
+          {item.title?.trim()}
         </h3>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4 line-clamp-2 flex-grow">
           {item.shortDescription}
