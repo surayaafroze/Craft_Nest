@@ -163,7 +163,13 @@ export default function DashboardOverviewPage() {
       <ErrorState 
         title={isAuthError ? "Session Expired" : "Error loading dashboard"}
         description={error}
-        onAction={isAuthError ? () => router.push('/login') : fetchDashboardData}
+        onAction={isAuthError ? () => {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+            window.location.href = '/login';
+          }
+        } : fetchDashboardData}
         actionText={isAuthError ? "Sign In Again" : "Try Again"}
       />
     );
