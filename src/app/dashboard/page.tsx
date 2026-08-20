@@ -31,6 +31,8 @@ export default function DashboardOverviewPage() {
   const [recentItems, setRecentItems] = useState<any[]>([]);
   const [recentReviews, setRecentReviews] = useState<any[]>([]);
 
+  const isAuthError = error?.toLowerCase().includes("session") || error?.toLowerCase().includes("unauthorized") || error?.toLowerCase().includes("token") || error?.toLowerCase().includes("login");
+
   const fetchDashboardData = useCallback(async () => {
     const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('auth_token');
     if (!session && !hasToken) {
@@ -44,20 +46,32 @@ export default function DashboardOverviewPage() {
 
       const [overviewRes, itemsRes, reviewsRes] = await Promise.all([
         authFetch(`/api/backend/dashboard/overview`),
-        authFetch(`/api/backend/items/mine?limit=4`),
-        authFetch(`/api/backend/reviews/me`)
+        authFetch(`/api/backend/items/mine?limit=4`).catch(() => null),
+        authFetch(`/api/backend/reviews/me`).catch(() => null)
       ]);
 
-      if (!overviewRes.ok) throw new Error("Failed to load dashboard overview");
+      if (!overviewRes.ok) {
+        if (overviewRes.status === 401) {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+          }
+          setError("Your session has expired. Please sign in again to view your dashboard.");
+          return;
+        }
+        const errData = await overviewRes.json().catch(() => null);
+        throw new Error(errData?.error || errData?.message || "Failed to load dashboard overview");
+      }
+
       const overviewData = await overviewRes.json();
       setOverview(overviewData);
 
-      if (itemsRes.ok) {
+      if (itemsRes && itemsRes.ok) {
         const itemsData = await itemsRes.json();
         setRecentItems(itemsData.items || []);
       }
 
-      if (reviewsRes.ok) {
+      if (reviewsRes && reviewsRes.ok) {
         const reviewsData = await reviewsRes.json();
         setRecentReviews((reviewsData.reviews || []).slice(0, 3));
       }
@@ -84,10 +98,10 @@ export default function DashboardOverviewPage() {
   if (error) {
     return (
       <ErrorState 
-        title="Error loading dashboard"
+        title={isAuthError ? "Session Expired" : "Error loading dashboard"}
         description={error}
-        onAction={fetchDashboardData}
-        actionText="Try Again"
+        onAction={isAuthError ? () => router.push('/login') : fetchDashboardData}
+        actionText={isAuthError ? "Sign In Again" : "Try Again"}
       />
     );
   }
