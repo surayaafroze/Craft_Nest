@@ -10,12 +10,21 @@ export const apiClient = axios.create({
   },
 });
 
-// Interceptor to attach Authorization Bearer token from localStorage
+// Interceptor to attach Authorization Bearer token from localStorage and x-user-email fallback
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('auth_token');
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    const cached = localStorage.getItem('user_info');
+    if (cached) {
+      try {
+        const u = JSON.parse(cached);
+        if (u && u.email && !config.headers['x-user-email']) {
+          config.headers['x-user-email'] = u.email;
+        }
+      } catch (e) {}
     }
   }
   return config;

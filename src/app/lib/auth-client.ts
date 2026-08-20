@@ -158,6 +158,19 @@ export const authFetch = async (url: string | URL, options: RequestInit = {}): P
     headers.set('Authorization', `Bearer ${token}`);
   }
 
+  // Attach email fallback header
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem('user_info');
+    if (cached) {
+      try {
+        const u = JSON.parse(cached);
+        if (u && u.email) {
+          headers.set('x-user-email', u.email);
+        }
+      } catch (e) {}
+    }
+  }
+
   let res = await fetch(url, {
     credentials: 'include',
     ...options,
