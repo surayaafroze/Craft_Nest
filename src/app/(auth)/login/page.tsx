@@ -45,11 +45,30 @@ export default function LoginPage() {
       }
 
       // 2. Authenticate with Better Auth client
-      const { error: authError } = await authClient.signIn.email({
+      const { data: authData, error: authError } = await authClient.signIn.email({
         email,
         password,
         callbackURL: "/dashboard",
       });
+
+      // 3. Fallback sync if backend login failed but Better Auth succeeded
+      if (!backendSuccess && authData?.user) {
+        try {
+          const syncRes = await apiClient.post("/auth/sync", {
+            email: authData.user.email,
+            name: authData.user.name,
+            avatarUrl: authData.user.image,
+            role: (authData.user as any).role || 'user',
+          });
+          if (syncRes.data?.token) {
+            localStorage.setItem('auth_token', syncRes.data.token);
+            if (syncRes.data?.user) {
+              localStorage.setItem('user_info', JSON.stringify(syncRes.data.user));
+            }
+            backendSuccess = true;
+          }
+        } catch (e) {}
+      }
 
       if (authError && !backendSuccess) {
         setError(authError.message || "Failed to sign in. Please check your credentials.");
@@ -101,11 +120,29 @@ export default function LoginPage() {
         console.warn("Direct backend demo login warning:", backendErr?.response?.data?.error || backendErr?.message);
       }
 
-      const { error: authError } = await authClient.signIn.email({
+      const { data: authData, error: authError } = await authClient.signIn.email({
         email: demoEmail,
         password: demoPassword,
         callbackURL: "/dashboard",
       });
+
+      if (!backendSuccess && authData?.user) {
+        try {
+          const syncRes = await apiClient.post("/auth/sync", {
+            email: authData.user.email,
+            name: authData.user.name,
+            avatarUrl: authData.user.image,
+            role: (authData.user as any).role || role,
+          });
+          if (syncRes.data?.token) {
+            localStorage.setItem('auth_token', syncRes.data.token);
+            if (syncRes.data?.user) {
+              localStorage.setItem('user_info', JSON.stringify(syncRes.data.user));
+            }
+            backendSuccess = true;
+          }
+        } catch (e) {}
+      }
 
       if (authError && !backendSuccess) {
         setError(authError.message || "Demo login failed");

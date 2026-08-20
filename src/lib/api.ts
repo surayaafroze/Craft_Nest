@@ -21,15 +21,34 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor to handle unauthorized errors globally
+// Interceptor to handle unauthorized errors and auto-sync
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_token');
+        const cached = localStorage.getItem('user_info');
+        if (cached) {
+          try {
+            const u = JSON.parse(cached);
+            if (u && u.email) {
+              const syncRes = await axios.post(`${API_BASE_URL}/auth/sync`, {
+                email: u.email,
+                name: u.name,
+                avatarUrl: u.avatarUrl || u.image,
+                role: u.role,
+              });
+              if (syncRes.data?.token) {
+                localStorage.setItem('auth_token', syncRes.data.token);
+                originalRequest.headers.Authorization = `Bearer ${syncRes.data.token}`;
+                return apiClient(originalRequest);
+              }
+            }
+          } catch (syncErr) {}
+        }
       }
-      console.warn('Unauthorized access - potentially expired session');
     }
     return Promise.reject(error);
   }

@@ -111,20 +111,73 @@ export function useSession() {
   };
 }
 
-// ─── Authenticated fetch helper ───────────────────────────────────────────────
+// ─── Authenticated fetch helper with auto-sync and auto-retry on 401 ────────────
 export const authFetch = async (url: string | URL, options: RequestInit = {}): Promise<Response> => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+  let token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+
+  // Helper to attempt syncing token from cached user
+  const trySyncToken = async (): Promise<string | null> => {
+    if (typeof window === 'undefined') return null;
+    const cached = localStorage.getItem('user_info');
+    if (!cached) return null;
+    try {
+      const u = JSON.parse(cached);
+      if (u && u.email) {
+        const syncRes = await fetch('/api/backend/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: u.email,
+            name: u.name,
+            avatarUrl: u.avatarUrl || u.image,
+            role: u.role,
+          }),
+        });
+        if (syncRes.ok) {
+          const syncData = await syncRes.json();
+          if (syncData.token) {
+            localStorage.setItem('auth_token', syncData.token);
+            if (syncData.user) {
+              localStorage.setItem('user_info', JSON.stringify(syncData.user));
+            }
+            return syncData.token;
+          }
+        }
+      }
+    } catch (e) {}
+    return null;
+  };
+
+  // If token is missing, attempt sync first
+  if (!token) {
+    token = await trySyncToken();
+  }
+
   const headers = new Headers(options.headers || {});
-  
   if (token && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  return fetch(url, {
+  let res = await fetch(url, {
     credentials: 'include',
     ...options,
     headers,
   });
+
+  // If 401 Unauthorized, refresh token once and auto-retry
+  if (res.status === 401 && typeof window !== 'undefined') {
+    const newToken = await trySyncToken();
+    if (newToken) {
+      headers.set('Authorization', `Bearer ${newToken}`);
+      res = await fetch(url, {
+        credentials: 'include',
+        ...options,
+        headers,
+      });
+    }
+  }
+
+  return res;
 };
 
 export const hasValidAuthToken = (): boolean => {
