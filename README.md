@@ -105,6 +105,7 @@ Create a `.env.local` file in the root directory and configure the following var
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=
+NEXT_PUBLIC_SERVER_URL=http://localhost:5000
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 NEXT_PUBLIC_IMGBB_API_KEY=
 ```
