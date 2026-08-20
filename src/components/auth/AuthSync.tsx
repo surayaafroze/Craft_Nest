@@ -12,21 +12,26 @@ export function AuthSync() {
   useEffect(() => {
     if (isPending) return;
 
-    // Skip network sync if auth_token already exists in localStorage
-    if (typeof window !== 'undefined' && localStorage.getItem('auth_token')) {
-      hasSynced.current = true;
-      return;
-    }
-
-    if (session) {
-      // Sync if we haven't synced yet, or if the session ID changed (e.g. switched users)
-      if (!hasSynced.current || lastSessionId.current !== session.session.id) {
-        apiClient.post("/auth/sync")
+    if (session?.user) {
+      const userIdentifier = session.user.email || session.session?.id || 'session';
+      if (!hasSynced.current || lastSessionId.current !== userIdentifier) {
+        apiClient.post("/auth/sync", {
+          email: session.user.email,
+          name: session.user.name,
+          avatarUrl: session.user.image,
+          role: session.user.role,
+        })
           .then((res) => {
             hasSynced.current = true;
-            lastSessionId.current = session.session.id;
+            lastSessionId.current = userIdentifier;
             if (res.data?.token) {
               localStorage.setItem('auth_token', res.data.token);
+              if (res.data?.user) {
+                localStorage.setItem('user_info', JSON.stringify(res.data.user));
+              }
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('auth_sync_complete'));
+              }
             }
           })
           .catch(() => {
@@ -34,7 +39,6 @@ export function AuthSync() {
           });
       }
     } else {
-      // If logged out on frontend, clear the backend JWT too
       if (hasSynced.current || lastSessionId.current) {
         apiClient.post("/auth/logout")
           .then(() => {

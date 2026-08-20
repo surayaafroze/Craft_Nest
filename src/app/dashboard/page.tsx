@@ -34,8 +34,35 @@ export default function DashboardOverviewPage() {
   const isAuthError = error?.toLowerCase().includes("session") || error?.toLowerCase().includes("unauthorized") || error?.toLowerCase().includes("token") || error?.toLowerCase().includes("login");
 
   const fetchDashboardData = useCallback(async () => {
-    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('auth_token');
-    if (!session && !hasToken) {
+    let token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+
+    // If no token in localStorage yet but session exists, try to sync first
+    if (!token && session?.user?.email) {
+      try {
+        const syncRes = await fetch(`/api/backend/auth/sync`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: session.user.email,
+            name: session.user.name,
+            avatarUrl: session.user.image,
+            role: session.user.role,
+          })
+        });
+        if (syncRes.ok) {
+          const syncData = await syncRes.json();
+          if (syncData.token) {
+            token = syncData.token;
+            localStorage.setItem('auth_token', syncData.token);
+            if (syncData.user) {
+              localStorage.setItem('user_info', JSON.stringify(syncData.user));
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!session && !token) {
       setLoading(false);
       return;
     }
@@ -51,6 +78,33 @@ export default function DashboardOverviewPage() {
       ]);
 
       if (!overviewRes.ok) {
+        // If 401, try one sync attempt before giving up
+        if (overviewRes.status === 401 && session?.user?.email) {
+          const syncRes = await fetch(`/api/backend/auth/sync`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: session.user.email,
+              name: session.user.name,
+              avatarUrl: session.user.image,
+              role: session.user.role,
+            })
+          });
+          if (syncRes.ok) {
+            const syncData = await syncRes.json();
+            if (syncData.token) {
+              localStorage.setItem('auth_token', syncData.token);
+              // Retry fetching overview with the newly synced token
+              const retryOverviewRes = await authFetch(`/api/backend/dashboard/overview`);
+              if (retryOverviewRes.ok) {
+                const overviewData = await retryOverviewRes.json();
+                setOverview(overviewData);
+                return;
+              }
+            }
+          }
+        }
+
         if (overviewRes.status === 401) {
           if (typeof window !== 'undefined') {
             localStorage.removeItem('auth_token');
@@ -85,6 +139,15 @@ export default function DashboardOverviewPage() {
 
   useEffect(() => {
     fetchDashboardData();
+
+    const handleSyncComplete = () => {
+      fetchDashboardData();
+    };
+
+    window.addEventListener('auth_sync_complete', handleSyncComplete);
+    return () => {
+      window.removeEventListener('auth_sync_complete', handleSyncComplete);
+    };
   }, [fetchDashboardData]);
 
   if (loading) {
