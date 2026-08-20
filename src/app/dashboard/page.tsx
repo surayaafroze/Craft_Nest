@@ -46,7 +46,7 @@ export default function DashboardOverviewPage() {
             email: session.user.email,
             name: session.user.name,
             avatarUrl: session.user.image,
-            role: session.user.role,
+            role: (session.user as any)?.role || 'user',
           })
         });
         if (syncRes.ok) {
@@ -87,7 +87,7 @@ export default function DashboardOverviewPage() {
               email: session.user.email,
               name: session.user.name,
               avatarUrl: session.user.image,
-              role: session.user.role,
+              role: (session.user as any)?.role || 'user',
             })
           });
           if (syncRes.ok) {
