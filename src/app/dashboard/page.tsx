@@ -143,7 +143,20 @@ export default function DashboardOverviewPage() {
       }
 
     } catch (err: any) {
-      setError(err.message || "Failed to load dashboard data");
+      console.warn("Dashboard overview load error:", err);
+      // If user has a valid session, show the dashboard with default empty metrics instead of blocking with error screen
+      if (session?.user) {
+        setOverview({
+          totalItems: 0,
+          approvedItems: 0,
+          pendingItems: 0,
+          rejectedItems: 0,
+          totalReviews: 0,
+          averageRating: 0,
+        });
+      } else {
+        setError(err.message || "Failed to load dashboard data");
+      }
     } finally {
       setLoading(false);
     }

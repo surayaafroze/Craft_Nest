@@ -19,7 +19,7 @@ export function AuthSync() {
           email: session.user.email,
           name: session.user.name,
           avatarUrl: session.user.image,
-          role: session.user.role,
+          role: (session.user as any)?.role || 'user',
         })
           .then((res) => {
             hasSynced.current = true;
